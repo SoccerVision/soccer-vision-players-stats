@@ -1,5 +1,3 @@
-# app/core/player.py
-
 import random
 import string
 import uuid
@@ -61,24 +59,56 @@ class Player:
         return random.choice(['CountryA', 'CountryB', 'CountryC'])
 
     def generate_stats(self) -> Dict[str, Dict[str, int]]:
-        stats = {
-            'Mental': {
-                'Aggression': random.randint(40, 80),
-                'Composure': random.randint(40, 80),
-                'Decisions': random.randint(40, 80),
-                'Teamwork': random.randint(40, 80),
-            },
-            'Athletic': {
-                'Acceleration': random.randint(40, 80),
-                'Ball Control': random.randint(40, 80),
-                'Dribbling': random.randint(40, 80),
-                'Heading': random.randint(40, 80),
-                'Jumping': random.randint(40, 80),
-                'Physical Power': random.randint(40, 80),
-                'Speed': random.randint(40, 80),
-            },
-            # You can add more categories and stats as needed
+        stats = {}
+        # 'Mental' and 'Athletic' categories remain the same
+        stats['Mental'] = {
+            'Aggression': random.randint(40, 80),
+            'Composure': random.randint(40, 80),
+            'Decisions': random.randint(40, 80),
+            'Teamwork': random.randint(40, 80),
         }
+        stats['Athletic'] = {
+            'Acceleration': random.randint(40, 80),
+            'Ball Control': random.randint(40, 80),
+            'Dribbling': random.randint(40, 80),
+            'Heading': random.randint(40, 80),
+            'Jumping': random.randint(40, 80),
+            'Physical Power': random.randint(40, 80),
+            'Speed': random.randint(40, 80),
+        }
+        # For the other categories, generate stats based on mean and std_dev
+        other_categories = {
+            'Defense': {
+                'Tackling': {'mean': 50, 'std_dev': 4},
+                'Marking': {'mean': 50, 'std_dev': 4},
+                'Positioning': {'mean': 50, 'std_dev': 4},
+            },
+            'Attack': {
+                'Finishing': {'mean': 50, 'std_dev': 4},
+                'Long Shots': {'mean': 50, 'std_dev': 4},
+                'Off The Ball': {'mean': 50, 'std_dev': 4},
+            },
+            'Playmaking': {
+                'Creative': {'mean': 50, 'std_dev': 4},
+                'Passing': {'mean': 50, 'std_dev': 4},
+                'Crossing': {'mean': 50, 'std_dev': 4},
+            },
+            'Set Pieces': {
+                'Free Kicks': {'mean': 50, 'std_dev': 15, 'min': 30, 'max': 90},
+                'Penalty': {'mean': 60, 'std_dev': 15, 'min': 30, 'max': 90},
+            },
+        }
+        for category, stats_dict in other_categories.items():
+            stats[category] = {}
+            for stat_name, params in stats_dict.items():
+                mean = params['mean']
+                std_dev = params['std_dev']
+                min_val = params.get('min', 0)
+                max_val = params.get('max', 100)
+                value = int(random.gauss(mean, std_dev))
+                # Clamp the value between min_val and max_val
+                value = max(min_val, min(max_val, value))
+                stats[category][stat_name] = value
         return stats
 
     def calculate_averages(self) -> Dict[str, int]:
@@ -101,5 +131,5 @@ class Player:
             'Nationality': self.nationality,
             'Stats': self.stats,
             'Averages': self.averages,
-            'ID': self.id  # Excluded from the response
+            'ID': self.id
         }
