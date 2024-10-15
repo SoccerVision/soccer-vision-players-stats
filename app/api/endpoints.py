@@ -5,23 +5,8 @@ from fastapi import APIRouter
 from app.core.team_generator import generate_team
 from app.core.models import PlayerModel
 from typing import List
-from fastapi.middleware.cors import CORSMiddleware
 
 router = APIRouter()
-
-# Define the allowed origins
-origins = [
-    "https://soccersimulator.github.io",  # Your GitHub Pages URL
-]
-
-# Add CORS middleware to allow requests from your GitHub Pages site
-router.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,  # Allows only specific origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allows all headers
-)
 
 @router.get("/team", response_model=List[PlayerModel], summary="Generate a team", description="Generates a soccer team and returns it as JSON.")
 async def get_team():
