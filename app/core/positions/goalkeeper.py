@@ -30,7 +30,7 @@ class Goalkeeper(Player):
         stat_config.pop('Attack', None)
         stat_config.pop('Playmaking', None)
         stat_config.pop('Defense', None)
-
+        
         # Ensure 'Set Pieces' exists with default values
         stat_config['Set Pieces'] = {
             'Free Kicks': {'mean': 30, 'std_dev': 5, 'min': 20, 'max': 50},

@@ -10,7 +10,7 @@ class Striker(Player):
         stat_config = super().get_stat_config()
 
         # Striker-specific adjustments
-        stat_config['Mental']['Composure'] = {'mean': 60, 'std_dev': 4}
+        stat_config['Mental']['Composure'] = {'mean': 70, 'std_dev': 4}
         stat_config['Athletic']['Physical Power']['mean'] = 55
         stat_config['Athletic']['Ball Control']['mean'] = 60
         stat_config['Athletic']['Dribbling']['mean'] = 65

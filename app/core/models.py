@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Dict, Any
 
 class PlayerModel(BaseModel):
-    ID:str
+    ID: str
     Name: str
     Shirt_Number: int
     Position: str
@@ -20,7 +20,7 @@ class PlayerModel(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "ID":'688164b0-2ac5-4b8f-abd3-2c62459a356c',
+                "ID": '688164b0-2ac5-4b8f-abd3-2c62459a356c',
                 "Name": "John Smith",
                 "Shirt_Number": 10,
                 "Position": "Midfielder",
@@ -48,11 +48,34 @@ class PlayerModel(BaseModel):
                         "Jumping": 75,
                         "Physical Power": 80,
                         "Speed": 87
+                    },
+                    "Defense": {
+                        "Tackling": 65,
+                        "Marking": 70,
+                        "Positioning": 75
+                    },
+                    "Attack": {
+                        "Finishing": 60,
+                        "Long Shots": 62,
+                        "Off The Ball": 68
+                    },
+                    "Playmaking": {
+                        "Creative": 72,
+                        "Passing": 80,
+                        "Crossing": 75
+                    },
+                    "Set Pieces": {
+                        "Free Kicks": 55,
+                        "Penalty": 60
                     }
                 },
                 "Averages": {
                     "Mental": 79,
-                    "Athletic": 83
+                    "Athletic": 83,
+                    "Defense": 70,
+                    "Attack": 63,
+                    "Playmaking": 76,
+                    "Set Pieces": 57
                 }
             }
         }
