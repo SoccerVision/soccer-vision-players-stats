@@ -10,9 +10,9 @@ class Midfielder(Player):
         stat_config = super().get_stat_config()
 
         # Midfielder-specific adjustments
-        stat_config['Playmaking']['Creative'] = {'mean': 65, 'std_dev': 4}
-        stat_config['Playmaking']['Passing'] = {'mean': 65, 'std_dev': 4}
-        stat_config['Playmaking']['Crossing'] = {'mean': 65, 'std_dev': 4}
+        stat_config['Playmaking']['Creative'] = {'mean': 70, 'std_dev': 4}
+        stat_config['Playmaking']['Passing'] = {'mean': 72, 'std_dev': 4}
+        stat_config['Playmaking']['Crossing'] = {'mean': 68, 'std_dev': 4}
 
         stat_config['Attack']['Finishing'] = {'mean': 50, 'std_dev': 4}
         stat_config['Attack']['Long Shots'] = {'mean': 60, 'std_dev': 4}
