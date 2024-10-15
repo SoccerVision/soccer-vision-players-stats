@@ -48,7 +48,12 @@ This repository contains the backend logic for a soccer simulation game. The bac
     pipenv install
     ```
 
-4. Activate the environment:
+4. Create new venv
+    ```bash
+    python3 -m venv venv
+    ```
+
+5. Activate the environment:
 
     ```bash
     pipenv shell
