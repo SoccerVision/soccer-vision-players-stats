@@ -22,3 +22,8 @@ async def get_player(player_id: int):
         return player.to_dict()
     else:
         raise HTTPException(status_code=404, detail="Player not found")
+
+# Dummy endpoint for UptimeRobot HEAD request
+@router.head("/uptime-check")
+async def uptime_check():
+    return {"message": "Uptime check"}
