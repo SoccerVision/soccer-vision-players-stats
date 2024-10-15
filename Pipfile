@@ -8,6 +8,7 @@ fastapi = "*"
 uvicorn = "*"
 gunicorn = "*"
 
+
 [dev-packages]
 
 [requires]

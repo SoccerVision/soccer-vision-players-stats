@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/idanlevian/Desktop/projects/soccerSimulator/venv"
+set -gx VIRTUAL_ENV "/Users/idanlevian/Desktop/projects/soccerSimulatorOrganization/Soccer-Simulation-BE/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
