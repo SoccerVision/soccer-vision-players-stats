@@ -188,6 +188,12 @@ class Player:
                 if stat != 'Stamina':
                     player_stats[category][stat] = round(player_stats[category][stat] * multiplier)
 
+    def adjust_acceleration_based_on_speed(self, player_stats):
+        speed = player_stats['Athletic']['Speed']
+        acceleration_min = max(1, speed - 10)
+        acceleration_max = min(99, speed + 10)
+        player_stats['Athletic']['Acceleration'] = random.randint(acceleration_min, acceleration_max)
+
     def apply_height_adjustments(self, player_stats):
         athletic_stats = player_stats['Athletic']
 
