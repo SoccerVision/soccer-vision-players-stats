@@ -1,4 +1,4 @@
-# PlayersStats/Normal/fullback.py
+# app/core/positions/fullback.py
 
 import random
 from ..player import Player
