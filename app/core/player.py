@@ -40,10 +40,6 @@ class Player:
 
     def assign_age(self) -> int:
         return random.randint(21, 30)
-    #
-    # # Base height for non-position-specific players
-    # def assign_height(self) -> int:
-    #     return random.randint(160, 200)
 
     def assign_height(self):
         # Generate height with normal distribution centered at 183 cm
