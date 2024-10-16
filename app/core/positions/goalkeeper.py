@@ -1,4 +1,4 @@
-# PlayersStats/Normal/goalkeeper.py
+# app/core/positions/goalkeeper.py
 
 import random
 from ..player import Player
@@ -8,11 +8,16 @@ class Goalkeeper(Player):
         super().__init__('Goalkeeper',assigned_numbers=assigned_numbers)
 
     def assign_height(self):
-        # Goalkeepers are generally taller
+        # Generate height with normal distribution centered at 183 cm
         while True:
-            height = random.gauss(188, 3)
-            if 183 <= height <= 200:
-                return round(height)
+            height = random.gauss(183, 4)
+            if 175 <= height <= 200:
+                # Adjust for rarity of heights below 180 cm
+                if height < 180:
+                    if random.random() < 0.10:  # 10% chance for heights below 180 cm
+                        return round(height)
+                else:
+                    return round(height)
 
     def get_stat_config(self):
         stat_config = super().get_stat_config()

@@ -1,12 +1,13 @@
 import random
 import uuid
 
+
 class Player:
     def __init__(self, position, assigned_numbers: set = None):
         self.position = position
-        self.id = self.assign_id()  # New: Assign unique ID
-        self.name = self.assign_name()  # New: Assign a name
-        self.shirt_number = self.assign_shirt_number(assigned_numbers)  # New: Assign shirt number
+        self.id = self.assign_id()  # Assign unique ID
+        self.name = self.assign_name()  # Assign a name
+        self.shirt_number = self.assign_shirt_number(assigned_numbers)  # Assign shirt number
         self.age = self.assign_age()
         self.height = self.assign_height()
         self.preferred_foot = self.assign_preferred_foot()
@@ -17,18 +18,18 @@ class Player:
         self.stats = self.generate_stats()
         self.averages = self.calculate_averages()
 
-    # New: Assign unique ID to each player
+    # Assign unique ID to each player
     def assign_id(self) -> str:
         return str(uuid.uuid4())
 
-    # New: Generate a random name for the player
+    # Generate a random name for the player
     def assign_name(self) -> str:
         first_names = ['John', 'Michael', 'David', 'Chris', 'James', 'Robert', 'Daniel', 'William', 'Richard', 'Thomas']
-        last_names = ['Smith', 'Johnson', 'Brown', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin']
-        name = f"{random.choice(first_names)} {random.choice(last_names)}"
-        return name
+        last_names = ['Smith', 'Johnson', 'Brown', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris',
+                      'Martin']
+        return f"{random.choice(first_names)} {random.choice(last_names)}"
 
-    # New: Assign a unique shirt number to each player
+    # Assign a unique shirt number to each player
     def assign_shirt_number(self, assigned_numbers: set = None) -> int:
         if assigned_numbers is None:
             assigned_numbers = set()
@@ -37,17 +38,20 @@ class Player:
         assigned_numbers.add(shirt_number)
         return shirt_number
 
-    def assign_age(self):
+    def assign_age(self) -> int:
         return random.randint(21, 30)
+    #
+    # # Base height for non-position-specific players
+    # def assign_height(self) -> int:
+    #     return random.randint(160, 200)
 
     def assign_height(self):
         # Generate height with normal distribution centered at 183 cm
         while True:
-            height = random.gauss(183, 4)
-            if 175 <= height <= 200:
-                # Adjust for rarity of heights below 180 cm
-                if height < 180:
-                    if random.random() < 0.10:  # 10% chance for heights below 180 cm
+            height = random.gauss(178, 8)
+            if 160 <= height <= 200:
+                if height < 160 or height > 190:
+                    if random.random() < 0.10:  # 10% chance
                         return round(height)
                 else:
                     return round(height)
@@ -89,15 +93,15 @@ class Player:
         )[0]
         return fitness_level
 
-    def assign_nationality(self):
+    def assign_nationality(self)-> str:
         countries = ['CountryA', 'CountryB', 'CountryC']  # Placeholder list
         return random.choice(countries)
 
+    # Base stat configuration for players
     def get_stat_config(self):
-        # Base configuration for all players
         stat_config = {
             'Mental': {
-                'Aggression': {'mean': 50, 'std_dev': 15, 'min': 10, 'max': 90},
+                'Aggression': {'mean': random.randint(10, 90), 'std_dev': 5},
                 'Teamwork': {'mean': 50, 'std_dev': 8},
                 'Decisions': {'mean': 50, 'std_dev': 6},
                 'Composure': {'mean': 50, 'std_dev': 6},
@@ -298,7 +302,7 @@ class Player:
             averages[category] = round(avg)
         return averages
 
-    # New: Convert the player object to a dictionary for easy output
+    # Convert the player object to a dictionary for easy output
     def to_dict(self):
         return {
             'Name': self.name,

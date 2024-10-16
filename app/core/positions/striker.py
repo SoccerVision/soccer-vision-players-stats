@@ -1,5 +1,6 @@
-# PlayersStats/Normal/striker.py
+# app/core/positions/striker.py
 
+import random
 from ..player import Player
 
 class Striker(Player):

@@ -1,5 +1,6 @@
-# PlayersStats/Normal/midfielder.py
+# app/core/positions/midfielder.py
 
+import random
 from ..player import Player
 
 class Midfielder(Player):
@@ -12,7 +13,7 @@ class Midfielder(Player):
         # Midfielder-specific adjustments
         stat_config['Playmaking']['Creative'] = {'mean': 70, 'std_dev': 4}
         stat_config['Playmaking']['Passing'] = {'mean': 72, 'std_dev': 4}
-        stat_config['Playmaking']['Crossing'] = {'mean': 68, 'std_dev': 4}
+        stat_config['Playmaking']['Crossing'] = {'mean': 70, 'std_dev': 4}
 
         stat_config['Attack']['Finishing'] = {'mean': 50, 'std_dev': 4}
         stat_config['Attack']['Long Shots'] = {'mean': 60, 'std_dev': 4}
