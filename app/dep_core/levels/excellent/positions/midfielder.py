@@ -1,21 +1,23 @@
-import random
-from ..player import Player
+# app/core/levels/excellent/positions/midfielder.py
 
-class Midfielder(Player):
-    def __init__(self, assigned_numbers: set = None):
-        super().__init__('Midfielder', assigned_numbers=assigned_numbers)
+import random
+from app.dep_core.levels.excellent.excellent_player import ExcellentPlayer
+
+class Midfielder(ExcellentPlayer):
+    def __init__(self, assigned_numbers: set = None,):
+        super().__init__('Midfielder',  assigned_numbers=assigned_numbers)
 
     def get_stat_config(self):
         stat_config = super().get_stat_config()
 
         # Midfielder-specific adjustments
-        stat_config['Playmaking']['Creative'] = {'mean': 70, 'std_dev': 4}
-        stat_config['Playmaking']['Passing'] = {'mean': 72, 'std_dev': 4}
-        stat_config['Playmaking']['Crossing'] = {'mean': 70, 'std_dev': 4}
+        stat_config['Playmaking']['Creative'] = {'mean': 90, 'std_dev': 4}
+        stat_config['Playmaking']['Passing'] = {'mean': 92, 'std_dev': 4}
+        stat_config['Playmaking']['Crossing'] = {'mean': 90, 'std_dev': 4}
 
-        stat_config['Attack']['Finishing'] = {'mean': 50, 'std_dev': 4}
-        stat_config['Attack']['Long Shots'] = {'mean': 60, 'std_dev': 4}
-        stat_config['Attack']['Off The Ball'] = {'mean': 55, 'std_dev': 4}
+        stat_config['Attack']['Finishing'] = {'mean': 70, 'std_dev': 4}
+        stat_config['Attack']['Long Shots'] = {'mean': 80, 'std_dev': 4}
+        stat_config['Attack']['Off The Ball'] = {'mean': 75, 'std_dev': 4}
 
         return stat_config
 
@@ -39,9 +41,9 @@ class Midfielder(Player):
     def apply_attack_boost(self, player_stats):
         for stat_name in player_stats['Attack']:
             original_value = player_stats['Attack'][stat_name]
-            player_stats['Attack'][stat_name] = round(original_value * 1.35)  # 35% boost
+            player_stats['Attack'][stat_name] = self.cap_stat(round(original_value * 1.20),99)  # 35% boost
 
     def apply_defense_boost(self, player_stats):
         for stat_name in player_stats['Defense']:
             original_value = player_stats['Defense'][stat_name]
-            player_stats['Defense'][stat_name] = round(original_value * 1.45)  # 45% boost
+            player_stats['Defense'][stat_name] = self.cap_stat(round(original_value * 1.25),99)  # 45% boost

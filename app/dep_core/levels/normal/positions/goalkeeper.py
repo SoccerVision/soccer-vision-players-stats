@@ -1,11 +1,11 @@
-# app/core/positions/goalkeeper.py
+# app/core/levels/normal/positions/goalkeeper.py
 
 import random
-from ..player import Player
+from app.dep_core.levels.normal.player import Player
 
 class Goalkeeper(Player):
     def __init__(self,assigned_numbers: set = None):
-        super().__init__('Goalkeeper',assigned_numbers=assigned_numbers)
+        super().__init__('Goalkeeper', assigned_numbers=assigned_numbers)
 
     def assign_height(self):
         # Generate height with normal distribution centered at 183 cm

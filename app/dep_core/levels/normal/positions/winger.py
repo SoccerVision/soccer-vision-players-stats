@@ -1,11 +1,11 @@
-# PlayersStats/core/positions/winger.py
-import random
+# app/core/levels/normal/positions/winger.py
 
-from ..player import Player
+import random
+from app.dep_core.levels.normal.player import Player
 
 class Winger(Player):
-    def __init__(self,assigned_numbers: set = None):
-        super().__init__('Winger',assigned_numbers=assigned_numbers)
+    def __init__(self,assigned_numbers: set = None,):
+        super().__init__('Winger', assigned_numbers=assigned_numbers)
 
     def assign_height(self):
         # Lower base height for wingers to 175 cm
