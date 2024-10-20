@@ -8,6 +8,7 @@ class PlayerModel(BaseModel):
     Name: str
     Shirt_Number: int
     Position: str
+    Level: str
     Age: int
     Height: int
     Preferred_Foot: Dict[str, Any]
@@ -23,6 +24,7 @@ class PlayerModel(BaseModel):
                 "ID": '688164b0-2ac5-4b8f-abd3-2c62459a356c',
                 "Name": "John Smith",
                 "Shirt_Number": 10,
+                "Level":"Weaker | Normal | Excellent",
                 "Position": "Midfielder",
                 "Age": 28,
                 "Height": 180,

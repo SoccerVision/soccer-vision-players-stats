@@ -1,10 +1,10 @@
-# app/core/positions/defender.py
+# app/core/levels/normal/positions/defender.py
 
 import random
-from ..player import Player
+from app.core.levels.normal.player import Player
 
 class Defender(Player):
-    def __init__(self, assigned_numbers: set = None):
+    def __init__(self, assigned_numbers: set = None,):
         super().__init__('Defender',assigned_numbers=assigned_numbers)
 
     def assign_height(self):

@@ -1,7 +1,7 @@
-# app/core/positions/fullback.py
+# app/core/levels/normal/positions/fullback.py
 
 import random
-from ..player import Player
+from app.core.levels.normal.player import Player
 
 class FullBack(Player):
     def __init__(self, dominant_foot=None,assigned_numbers: set = None):

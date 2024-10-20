@@ -1,14 +1,14 @@
 # app/core/team_generator.py
 
 import random
-from app.core.positions.defender import Defender
-from app.core.positions.midfielder import Midfielder
-from app.core.positions.striker import Striker
-from app.core.positions.fullback import FullBack
-from app.core.positions.winger import Winger
-from app.core.positions.goalkeeper import Goalkeeper
+from app.core.levels.normal.positions.defender import Defender
+from app.core.levels.normal.positions.midfielder import Midfielder
+from app.core.levels.normal.positions.striker import Striker
+from app.core.levels.normal.positions.fullback import FullBack
+from app.core.levels.normal.positions.winger import Winger
+from app.core.levels.normal.positions.goalkeeper import Goalkeeper
 
-def generate_team():
+def generate_normal_team():
     team = []
     assigned_numbers = set()  # Set to keep track of assigned shirt numbers
 
@@ -63,4 +63,4 @@ def generate_team():
     return team
 
 if __name__ == "__main__":
-    team = generate_team()
+    team = generate_normal_team()

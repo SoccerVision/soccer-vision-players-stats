@@ -1,11 +1,11 @@
-# app/core/positions/goalkeeper.py
+# app/core/levels/weaker/positions/goalkeeper.py
 
 import random
-from ..player import Player
+from app.core.levels.weaker.weaker_player import WeakerPlayer
 
-class Goalkeeper(Player):
+class Goalkeeper(WeakerPlayer):
     def __init__(self,assigned_numbers: set = None):
-        super().__init__('Goalkeeper',assigned_numbers=assigned_numbers)
+        super().__init__('Goalkeeper', assigned_numbers=assigned_numbers)
 
     def assign_height(self):
         # Generate height with normal distribution centered at 183 cm
@@ -24,11 +24,11 @@ class Goalkeeper(Player):
 
         # Goalkeeper-specific stats
         stat_config['Goalkeeping'] = {
-            'Aerial Ability': {'mean': 70, 'std_dev': 4},
-            'Handling': {'mean': 75, 'std_dev': 4},
-            'Kicking': {'mean': 60, 'std_dev': 4},
-            'One on One': {'mean': 72, 'std_dev': 4},  # New stat added
-            'Reflexes': {'mean': 75, 'std_dev': 4},
+            'Aerial Ability': {'mean': 50, 'std_dev': 4},
+            'Handling': {'mean': 55, 'std_dev': 4},
+            'Kicking': {'mean': 40, 'std_dev': 4},
+            'One on One': {'mean': 52, 'std_dev': 4},  # New stat added
+            'Reflexes': {'mean': 35, 'std_dev': 4},
         }
 
         # Remove irrelevant stats
@@ -38,16 +38,16 @@ class Goalkeeper(Player):
         
         # Ensure 'Set Pieces' exists with default values
         stat_config['Set Pieces'] = {
-            'Free Kicks': {'mean': 30, 'std_dev': 5, 'min': 20, 'max': 50},
-            'Penalty': {'mean': 30, 'std_dev': 5, 'min': 20, 'max': 50},
+            'Free Kicks': {'mean': 15, 'std_dev': 5, 'min': 20, 'max': 50},
+            'Penalty': {'mean': 15, 'std_dev': 5, 'min': 20, 'max': 50},
         }
 
         # Athletic adjustments
-        stat_config['Athletic']['Physical Power']['mean'] = 70
-        stat_config['Athletic']['Jumping']['mean'] = 70
-        stat_config['Athletic']['Acceleration']['mean'] = 55
-        stat_config['Athletic']['Speed'] = {'mean': 55, 'std_dev': 8}
-        stat_config['Athletic']['Dribbling']['mean'] = 40
-        stat_config['Athletic']['Ball Control']['mean'] = 50
+        stat_config['Athletic']['Physical Power']['mean'] = 50
+        stat_config['Athletic']['Jumping']['mean'] = 50
+        stat_config['Athletic']['Acceleration']['mean'] = 35
+        stat_config['Athletic']['Speed'] = {'mean': 35, 'std_dev': 8}
+        stat_config['Athletic']['Dribbling']['mean'] = 20
+        stat_config['Athletic']['Ball Control']['mean'] = 30
 
         return stat_config

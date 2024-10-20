@@ -1,13 +1,16 @@
+# app/core/levels/excellent/excellent_player.py
+
 import random
 import uuid
 
 
-class Player:
+class ExcellentPlayer:
     def __init__(self, position, assigned_numbers: set = None):
         self.position = position
-        self.id = self.assign_id()  # Assign unique ID
-        self.name = self.assign_name()  # Assign a name
-        self.shirt_number = self.assign_shirt_number(assigned_numbers)  # Assign shirt number
+        self.level = 'Excellent'
+        self.id = self.assign_id()
+        self.name = self.assign_name()
+        self.shirt_number = self.assign_shirt_number(assigned_numbers)
         self.age = self.assign_age()
         self.height = self.assign_height()
         self.preferred_foot = self.assign_preferred_foot()
@@ -21,6 +24,10 @@ class Player:
     # Assign unique ID to each player
     def assign_id(self) -> str:
         return str(uuid.uuid4())
+
+    # Cap a value to a maximum of 99
+    def cap_stat(self, value, max_value=99):
+        return min(value, max_value)
 
     # Generate a random name for the player
     def assign_name(self) -> str:
@@ -98,36 +105,36 @@ class Player:
         stat_config = {
             'Mental': {
                 'Aggression': {'mean': random.randint(10, 90), 'std_dev': 5},
-                'Teamwork': {'mean': 50, 'std_dev': 8},
-                'Decisions': {'mean': 50, 'std_dev': 6},
-                'Composure': {'mean': 50, 'std_dev': 6},
+                'Teamwork': {'mean': 70, 'std_dev': 8},
+                'Decisions': {'mean': 70, 'std_dev': 6},
+                'Composure': {'mean': 70, 'std_dev': 6},
             },
             'Defense': {
-                'Tackling': {'mean': 50, 'std_dev': 4},
-                'Marking': {'mean': 50, 'std_dev': 4},
-                'Positioning': {'mean': 50, 'std_dev': 4},
+                'Tackling': {'mean': 70, 'std_dev': 4},
+                'Marking': {'mean': 70, 'std_dev': 4},
+                'Positioning': {'mean': 70, 'std_dev': 4},
             },
             'Attack': {
-                'Finishing': {'mean': 50, 'std_dev': 4},
-                'Long Shots': {'mean': 50, 'std_dev': 4},
-                'Off The Ball': {'mean': 50, 'std_dev': 4},
+                'Finishing': {'mean': 70, 'std_dev': 4},
+                'Long Shots': {'mean': 70, 'std_dev': 4},
+                'Off The Ball': {'mean': 70, 'std_dev': 4},
             },
             'Playmaking': {
-                'Creative': {'mean': 50, 'std_dev': 4},
-                'Passing': {'mean': 50, 'std_dev': 4},
-                'Crossing': {'mean': 50, 'std_dev': 4},
+                'Creative': {'mean': 70, 'std_dev': 4},
+                'Passing': {'mean': 70, 'std_dev': 4},
+                'Crossing': {'mean': 70, 'std_dev': 4},
             },
             'Athletic': {
-                'Physical Power': {'mean': 55, 'std_dev': 8},
-                'Ball Control': {'mean': 60, 'std_dev': 4},
-                'Dribbling': {'mean': 60, 'std_dev': 4},
-                'Jumping': {'mean': 55, 'std_dev': 8},
-                'Acceleration': {'mean': 60, 'std_dev': 8},
-                'Speed': {'mean': 60, 'std_dev': 8},
+                'Physical Power': {'mean': 75, 'std_dev': 8},
+                'Ball Control': {'mean': 85, 'std_dev': 4},
+                'Dribbling': {'mean': 85, 'std_dev': 4},
+                'Jumping': {'mean': 75, 'std_dev': 8},
+                'Acceleration': {'mean': 80, 'std_dev': 8},
+                'Speed': {'mean': 80, 'std_dev': 8},
             },
             'Set Pieces': {
-                'Free Kicks': {'mean': 50, 'std_dev': 15, 'min': 30, 'max': 90},
-                'Penalty': {'mean': 60, 'std_dev': 15, 'min': 30, 'max': 90},
+                'Free Kicks': {'mean': 70, 'std_dev': 15, 'min': 30, 'max': 90},
+                'Penalty': {'mean': 80, 'std_dev': 15, 'min': 30, 'max': 90},
             },
         }
         return stat_config
@@ -136,31 +143,33 @@ class Player:
         while True:
             value = random.gauss(mean, std_dev)
             if min_value <= value <= max_value:
-                return round(value)
+                return round(min(value,99))
 
     def generate_stats(self):
         player_stats = {}
         for category, stats in self.stat_config.items():
             category_stats = {}
             for stat_name, params in stats.items():
-                mean = params.get('mean', 50)
+                mean = params.get('mean', 70)
                 std_dev = params.get('std_dev', 4)
                 min_value = params.get('min', 0)
                 max_value = params.get('max', 99)
                 stat_value = self.generate_stat(mean, std_dev, min_value, max_value)
-                category_stats[stat_name] = stat_value
+                category_stats[stat_name] = self.cap_stat(stat_value, max_value=99)
             player_stats[category] = category_stats
 
-        # Apply age adjustments
+        # Apply adjustments and ensure no value exceeds 99
         self.apply_age_adjustments(player_stats)
-        # Apply fitness adjustments
         self.apply_fitness_adjustments(player_stats)
-        # Apply height adjustments
         self.apply_height_adjustments(player_stats)
-        # Apply preferred foot adjustments
         self.apply_preferred_foot_adjustments(player_stats)
-        # Additional calculations
         self.additional_calculations(player_stats)
+
+        # Cap all stats after adjustments
+        for category in player_stats:
+            for stat_name in player_stats[category]:
+                player_stats[category][stat_name] = self.cap_stat(player_stats[category][stat_name], 99)
+
         return player_stats
 
     def apply_age_adjustments(self, player_stats):
@@ -173,7 +182,7 @@ class Player:
 
         for category in player_stats:
             for stat in player_stats[category]:
-                player_stats[category][stat] = round(player_stats[category][stat] * multiplier)
+                player_stats[category][stat] = self.cap_stat(round(player_stats[category][stat] * multiplier),99)
 
     def apply_fitness_adjustments(self, player_stats):
         if self.fitness == 'Low':
@@ -186,7 +195,7 @@ class Player:
         for category in player_stats:
             for stat in player_stats[category]:
                 if stat != 'Stamina':
-                    player_stats[category][stat] = round(player_stats[category][stat] * multiplier)
+                    player_stats[category][stat] = self.cap_stat(round(player_stats[category][stat] * multiplier),99)
 
     def adjust_acceleration_based_on_speed(self, player_stats):
         speed = player_stats['Athletic']['Speed']
@@ -204,13 +213,13 @@ class Player:
         if self.height > 185:
             # Increase Jumping and Heading by 10%-12%
             increase_percentage = random.uniform(0.10, 0.12)
-            athletic_stats['Jumping'] = round(athletic_stats['Jumping'] * (1 + increase_percentage))
-            athletic_stats['Heading'] = round(athletic_stats['Heading'] * (1 + increase_percentage))
+            athletic_stats['Jumping'] = self.cap_stat(round(athletic_stats['Jumping'] * (1 + increase_percentage)))
+            athletic_stats['Heading'] = self.cap_stat(round(athletic_stats['Heading'] * (1 + increase_percentage)))
 
             # Adjust Physical Power, Speed, Acceleration based on height difference
             height_diff = self.height - 181
             adjustment = int(height_diff / 3)
-            adjustment = max(-5, min(5, adjustment))
+            adjustment = self.cap_stat(max(-5, min(5, adjustment)),99)
             athletic_stats['Physical Power'] += adjustment
 
 
@@ -221,7 +230,7 @@ class Player:
             # Existing adjustment based on height difference
             height_diff = self.height - 181
             adjustment = int(height_diff / 3)
-            adjustment = max(-5, min(5, adjustment))
+            adjustment = self.cap_stat(max(-5, min(5, adjustment)),99)
             if adjustment != 0:
                 athletic_stats['Jumping'] += adjustment
                 athletic_stats['Heading'] += adjustment
@@ -234,15 +243,17 @@ class Player:
 
         # Ensure stats are within valid ranges
         for stat in athletic_stats:
-            athletic_stats[stat] = max(1, min(99, athletic_stats.get(stat, 50)))
+            athletic_stats[stat] = self.cap_stat( max(1, min(99, athletic_stats.get(stat, 50))),99)
 
     def apply_preferred_foot_adjustments(self, player_stats):
         weak_foot_level = self.preferred_foot['Weak Foot Level']
         if weak_foot_level == 3:
             # Ambidextrous
-            player_stats['Attack']['Finishing'] += 5
-            player_stats['Attack']['Long Shots'] += 5
-            player_stats['Athletic']['Dribbling'] += 5
+            if 'Attack' in player_stats:
+                player_stats['Attack']['Finishing'] = self.cap_stat(player_stats['Attack'].get('Finishing', 0) + 5, 99)
+                player_stats['Attack']['Long Shots'] = self.cap_stat(player_stats['Attack'].get('Long Shots', 0) + 5, 99)
+            if 'Athletic' in player_stats:
+                player_stats['Athletic']['Dribbling'] = self.cap_stat(player_stats['Athletic'].get('Dribbling', 0) + 5, 99)
 
     # In PlayersStats/player.py
 
@@ -254,32 +265,32 @@ class Player:
 
         # Balancing logic
         speed_stats = [
-            athletic_stats.get('Speed', 50),
-            athletic_stats.get('Acceleration', 50),
-            athletic_stats.get('Dribbling', 50)
+            athletic_stats.get('Speed', 70),
+            athletic_stats.get('Acceleration', 70),
+            athletic_stats.get('Dribbling', 70)
         ]
         heading_stats = [
-            athletic_stats.get('Jumping', 50),
-            athletic_stats.get('Heading', 50)
+            athletic_stats.get('Jumping', 70),
+            athletic_stats.get('Heading', 70)
         ]
 
-        if all(stat < 50 for stat in speed_stats):
-            athletic_stats['Jumping'] = max(athletic_stats['Jumping'], 65)
-            athletic_stats['Heading'] = max(athletic_stats['Heading'], 65)
-        elif all(stat < 50 for stat in heading_stats):
-            athletic_stats['Speed'] = max(athletic_stats['Speed'], 65)
-            athletic_stats['Acceleration'] = max(athletic_stats['Acceleration'], 65)
+        if all(stat < 70 for stat in speed_stats):
+            athletic_stats['Jumping'] = max(athletic_stats['Jumping'], 85)
+            athletic_stats['Heading'] = max(athletic_stats['Heading'], 85)
+        elif all(stat < 70 for stat in heading_stats):
+            athletic_stats['Speed'] = max(athletic_stats['Speed'], 85)
+            athletic_stats['Acceleration'] = max(athletic_stats['Acceleration'], 85)
             if self.position not in ['Defender', 'Goalkeeper', 'FullBack']:
-                athletic_stats['Dribbling'] = max(athletic_stats['Dribbling'], 60)
+                athletic_stats['Dribbling'] = max(athletic_stats['Dribbling'], 80)
             else:
-                athletic_stats['Dribbling'] = max(athletic_stats['Dribbling'], 55)
+                athletic_stats['Dribbling'] = max(athletic_stats['Dribbling'], 75)
 
         # Adjust Physical Power
-        if athletic_stats['Jumping'] > 65:
-            athletic_stats['Physical Power'] = max(athletic_stats['Physical Power'], 65)
+        if athletic_stats['Jumping'] > 85:
+            athletic_stats['Physical Power'] = max(athletic_stats['Physical Power'], 85)
 
-        if athletic_stats['Acceleration'] < 57 or athletic_stats['Speed'] < 57:
-            athletic_stats['Physical Power'] = self.generate_stat(70, 4)
+        if athletic_stats['Acceleration'] < 77 or athletic_stats['Speed'] < 77:
+            athletic_stats['Physical Power'] = self.cap_stat(self.generate_stat(90, 4),99)
 
         # Correlate Free Kicks and Penalty with other stats
         # Safely get the stat categories
@@ -289,13 +300,13 @@ class Player:
 
         # Check if the stats exist before accessing them
         if attack_stats and set_pieces:
-            if attack_stats.get('Finishing', 0) > 70 or attack_stats.get('Off The Ball', 0) > 70:
+            if attack_stats.get('Finishing', 0) > 90 or attack_stats.get('Off The Ball', 0) > 90:
                 if 'Penalty' in set_pieces:
-                    set_pieces['Penalty'] += 5
+                    set_pieces['Penalty'] = self.cap_stat(set_pieces['Penalty']+ 5,99)
 
-            if attack_stats.get('Long Shots', 0) > 70 or playmaking_stats.get('Passing', 0) > 70:
+            if attack_stats.get('Long Shots', 0) > 90 or playmaking_stats.get('Passing', 0) > 90:
                 if 'Free Kicks' in set_pieces:
-                    set_pieces['Free Kicks'] += 5
+                    set_pieces['Free Kicks'] = self.cap_stat(set_pieces['Free Kicks']+ 5,99)
 
     def calculate_averages(self):
         averages = {}
@@ -310,6 +321,7 @@ class Player:
             'Name': self.name,
             'Shirt_Number': self.shirt_number,
             'Position': self.position,
+            "Level": self.level,
             'Age': self.age,
             'Height': self.height,
             'Preferred_Foot': self.preferred_foot,

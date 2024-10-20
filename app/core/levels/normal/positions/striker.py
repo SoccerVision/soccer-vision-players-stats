@@ -1,11 +1,10 @@
-# app/core/positions/striker.py
+# app/core/levels/normal/positions/striker.py
 
-import random
-from ..player import Player
+from app.core.levels.normal.player import Player
 
 class Striker(Player):
-    def __init__(self,assigned_numbers: set = None):
-        super().__init__('Striker',assigned_numbers=assigned_numbers)
+    def __init__(self,assigned_numbers: set = None,):
+        super().__init__('Striker', assigned_numbers=assigned_numbers)
 
     def get_stat_config(self):
         stat_config = super().get_stat_config()
