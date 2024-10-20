@@ -4,10 +4,10 @@ from fastapi import HTTPException
 from fastapi import APIRouter
 from typing import List
 
-from app.core.levels.normal.team_generator import generate_normal_team
-from app.core.levels.weaker.team_generator import generate_weaker_team
-from app.core.levels.excellent.team_generator import generate_excellent_team
-from app.core.models import PlayerModel
+from app.dep_core.levels.normal.team_generator import generate_normal_team
+from app.dep_core.levels.weaker.team_generator import generate_weaker_team
+from app.dep_core.levels.excellent.team_generator import generate_excellent_team
+from app.dep_core.models import PlayerModel
 
 router = APIRouter()
 
