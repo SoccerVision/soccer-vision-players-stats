@@ -8,9 +8,7 @@ class Midfielder(Player):
         super().__init__(position='Midfielder', level=level, assigned_numbers=assigned_numbers)
 
     def get_stat_config(self):
-        base_stats = player_config['levels'].get(self.level, {})
-        position_stats = player_config['positions'][self.level].get('Midfielder', {})
-        return self.merge_configs(base_stats, position_stats)
+        return player_config['positions'][self.level].get('Midfielder', {})
 
     def generate_stats(self):
         player_stats = super().generate_stats()  # Get the base stats

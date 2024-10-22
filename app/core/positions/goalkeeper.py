@@ -20,13 +20,11 @@ class Goalkeeper(Player):
                     return round(height)
 
     def get_stat_config(self):
-        base_stats = player_config['levels'].get(self.level, {})
         position_stats = player_config['positions'][self.level].get('Goalkeeper', {})
 
-        merged_stats = self.merge_configs(base_stats, position_stats)
         # Remove irrelevant stats
-        merged_stats.pop('Attack', None)
-        merged_stats.pop('Playmaking', None)
-        merged_stats.pop('Defense', None)
+        position_stats.pop('Attack', None)
+        position_stats.pop('Playmaking', None)
+        position_stats.pop('Defense', None)
 
-        return merged_stats
+        return position_stats
