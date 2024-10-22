@@ -57,9 +57,6 @@ def generate_team():
     return team
 
 
-import random
-
-
 def get_player_level():
     random_number = random.randint(1, 50)
     if random_number == 1:
