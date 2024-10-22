@@ -1,4 +1,4 @@
-# app/core/levels/normal/positions/midfielder.py
+# app/core/positions/normal/positions/midfielder.py
 
 import random
 from app.dep_core.levels.normal.player import Player

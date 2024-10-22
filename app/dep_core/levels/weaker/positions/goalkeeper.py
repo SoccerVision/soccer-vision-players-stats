@@ -1,4 +1,4 @@
-# app/core/levels/weaker/positions/goalkeeper.py
+# app/core/positions/weaker/positions/goalkeeper.py
 
 import random
 from app.dep_core.levels.weaker.weaker_player import WeakerPlayer

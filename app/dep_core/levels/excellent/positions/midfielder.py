@@ -1,4 +1,4 @@
-# app/core/levels/excellent/positions/midfielder.py
+# app/core/positions/excellent/positions/midfielder.py
 
 import random
 from app.dep_core.levels.excellent.excellent_player import ExcellentPlayer

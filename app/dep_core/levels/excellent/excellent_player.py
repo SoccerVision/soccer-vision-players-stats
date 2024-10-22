@@ -1,4 +1,4 @@
-# app/core/levels/excellent/excellent_player.py
+# app/core/positions/excellent/excellent_player.py
 
 import random
 import uuid
@@ -254,8 +254,6 @@ class ExcellentPlayer:
                 player_stats['Attack']['Long Shots'] = self.cap_stat(player_stats['Attack'].get('Long Shots', 0) + 5, 99)
             if 'Athletic' in player_stats:
                 player_stats['Athletic']['Dribbling'] = self.cap_stat(player_stats['Athletic'].get('Dribbling', 0) + 5, 99)
-
-    # In PlayersStats/player.py
 
     def additional_calculations(self, player_stats):
         athletic_stats = player_stats['Athletic']

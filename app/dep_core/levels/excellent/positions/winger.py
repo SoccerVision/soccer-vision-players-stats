@@ -1,4 +1,4 @@
-# app/core/levels/excellent/positions/winger.py
+# app/core/positions/excellent/positions/winger.py
 
 import random
 from app.dep_core.levels.excellent.excellent_player import ExcellentPlayer
