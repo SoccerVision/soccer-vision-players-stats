@@ -1,4 +1,4 @@
-# app/core/levels/excellent/team_generator.py
+# app/core/positions/excellent/team_generator.py
 
 import random
 from app.dep_core.levels.excellent.positions.defender import Defender

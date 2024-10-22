@@ -1,4 +1,4 @@
-# app/core/levels/weaker/positions/defender.py
+# app/core/positions/weaker/positions/defender.py
 
 import random
 from app.dep_core.levels.weaker.weaker_player import WeakerPlayer

@@ -1,4 +1,4 @@
-# app/core/levels/normal/positions/striker.py
+# app/core/positions/normal/positions/striker.py
 
 from app.dep_core.levels.normal.player import Player
 

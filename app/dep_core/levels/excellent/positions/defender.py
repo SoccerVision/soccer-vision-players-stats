@@ -1,4 +1,4 @@
-# app/core/levels/excellent/positions/defender.py
+# app/core/positions/excellent/positions/defender.py
 
 import random
 from app.dep_core.levels.excellent.excellent_player import ExcellentPlayer
