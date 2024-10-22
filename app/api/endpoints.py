@@ -6,11 +6,10 @@ from typing import List
 
 # New updated generated team!
 from app.core.team_generator import generate_team
+from app.core.weak_team_generator import generate_weak_team
+from app.core.normal_team_generator import generate_normal_team
+from app.core.excellent_team_generator import generate_excellent_team
 
-
-from app.dep_core.levels.normal.team_generator import generate_normal_team
-from app.dep_core.levels.weaker.team_generator import generate_weaker_team
-from app.dep_core.levels.excellent.team_generator import generate_excellent_team
 from app.dep_core.models import PlayerModel
 
 router = APIRouter()
@@ -23,11 +22,11 @@ async def get_team():
 
 @router.get("/team/weaker", response_model=List[PlayerModel], summary="Generate a weaker team", description="Generates a weaker soccer team and returns it as JSON.")
 async def get_team():
-    team = generate_weaker_team()
+    team = generate_weak_team()
     team_data = [player.to_dict() for player in team]
     return team_data
 
-@router.get("/team/normal", response_model=List[PlayerModel], summary="Generate a weaker team", description="Generates a weaker soccer team and returns it as JSON.")
+@router.get("/team/normal", response_model=List[PlayerModel], summary="Generate a normal team", description="Generates a normal soccer team and returns it as JSON.")
 async def get_team():
     team = generate_normal_team()
     team_data = [player.to_dict() for player in team]
