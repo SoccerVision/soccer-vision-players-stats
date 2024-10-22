@@ -40,6 +40,11 @@ class Player:
         if assigned_numbers is None:
             assigned_numbers = set()
         available_numbers = set(range(1, 100)) - assigned_numbers
+        while not available_numbers:
+            # If there are no available numbers, expand the range
+            max_number = max(assigned_numbers) + 1 if assigned_numbers else 100
+            available_numbers = set(range(1, max_number)) - assigned_numbers
+
         shirt_number = random.choice(list(available_numbers))
         assigned_numbers.add(shirt_number)
         return shirt_number
