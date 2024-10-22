@@ -6,6 +6,7 @@ from app.core.positions.striker import Striker
 from app.core.positions.winger import Winger
 from app.core.positions.midfielder import Midfielder
 
+
 def generate_team():
     team = []
     assigned_numbers = set()
@@ -55,11 +56,15 @@ def generate_team():
 
     return team
 
+
+import random
+
+
 def get_player_level():
     random_number = random.randint(1, 50)
     if random_number == 1:
         return 'excellent'
-    elif random_number <= 3:  # 1/20 chance for weaker (approximately)
+    elif 2 <= random_number <= 6:
         return 'weaker'
     else:
         return 'normal'
