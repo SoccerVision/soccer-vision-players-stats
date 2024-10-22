@@ -4,13 +4,14 @@ from fastapi import HTTPException
 from fastapi import APIRouter
 from typing import List
 
+from app.api.models import PlayerModel
 # New updated generated team!
 from app.core.team_generator import generate_team
 from app.core.weak_team_generator import generate_weak_team
 from app.core.normal_team_generator import generate_normal_team
 from app.core.excellent_team_generator import generate_excellent_team
 
-from app.dep_core.models import PlayerModel
+
 
 router = APIRouter()
 
