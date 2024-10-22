@@ -1,4 +1,4 @@
-# app/core/levels/normal/positions/winger.py
+# app/core/positions/normal/positions/winger.py
 
 import random
 from app.dep_core.levels.normal.player import Player

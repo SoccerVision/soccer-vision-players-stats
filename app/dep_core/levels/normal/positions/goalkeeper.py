@@ -1,4 +1,4 @@
-# app/core/levels/normal/positions/goalkeeper.py
+# app/core/positions/normal/positions/goalkeeper.py
 
 import random
 from app.dep_core.levels.normal.player import Player
