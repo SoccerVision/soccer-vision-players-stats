@@ -6,6 +6,8 @@ from app.core.positions.striker import Striker
 from app.core.positions.winger import Winger
 from app.core.positions.midfielder import Midfielder
 
+POSITIONS = [Goalkeeper, Defender, Fullback, Striker, Winger, Midfielder]
+
 
 def generate_team():
     team = []
@@ -48,11 +50,14 @@ def generate_team():
     generate_player(Winger, 2)
     generate_player(Midfielder, 4)
 
-    # Generate 2 young players (18-21) and 2 old players (29+)
-    generate_player(Goalkeeper, 1, age_range='young')
-    generate_player(Defender, 1, age_range='young')
-    generate_player(Striker, 1, age_range='old')
-    generate_player(Winger, 1, age_range='old')
+    # Randomly select positions for young and old players
+    for _ in range(2):
+        position_class = random.choice(POSITIONS)
+        generate_player(position_class, 1, age_range='young')
+
+    for _ in range(2):
+        position_class = random.choice(POSITIONS)
+        generate_player(position_class, 1, age_range='old')
 
     return team
 
