@@ -1,4 +1,4 @@
-# app/core/levels/weaker/positions/striker.py
+# app/core/positions/weaker/positions/striker.py
 
 from app.dep_core.levels.weaker.weaker_player import WeakerPlayer
 

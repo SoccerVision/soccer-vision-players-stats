@@ -1,4 +1,4 @@
-# app/core/levels/normal/positions/defender.py
+# app/core/positions/normal/positions/defender.py
 
 import random
 from app.dep_core.levels.normal.player import Player

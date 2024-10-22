@@ -1,4 +1,4 @@
-# app/core/levels/excellent/positions/striker.py
+# app/core/positions/excellent/positions/striker.py
 
 from app.dep_core.levels.excellent.excellent_player import ExcellentPlayer
 

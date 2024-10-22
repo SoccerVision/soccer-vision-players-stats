@@ -1,4 +1,4 @@
-# app/core/levels/weaker/team_generator.py
+# app/core/positions/weaker/team_generator.py
 
 import random
 from app.dep_core.levels.weaker.positions.defender import Defender

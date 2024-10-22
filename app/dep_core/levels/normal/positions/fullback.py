@@ -1,4 +1,4 @@
-# app/core/levels/normal/positions/fullback.py
+# app/core/positions/normal/positions/fullback.py
 
 import random
 from app.dep_core.levels.normal.player import Player
