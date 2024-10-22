@@ -1,6 +1,5 @@
 import random
 import uuid
-import copy
 from app.core.levels.player_config import player_config
 
 
@@ -101,22 +100,7 @@ class Player:
         return random.choice(countries)
 
     def get_stat_config(self):
-        base_stats = player_config["levels"].get(self.level.lower(), {})
-        position_stats = player_config['positions'][self.level.lower()].get(self.position, {})
-        merged_stats = self.merge_configs(base_stats, position_stats)
-        return merged_stats
-
-    def merge_configs(self, base_config, new_config):
-        merged_config = copy.deepcopy(base_config)
-        for key, value in new_config.items():
-            if key in merged_config:
-                if isinstance(value, dict) and isinstance(merged_config[key], dict):
-                    merged_config[key] = self.merge_configs(merged_config[key], value)
-                else:
-                    merged_config[key] = value
-            else:
-                merged_config[key] = value
-        return merged_config
+        return player_config['positions'][self.level.lower()].get(self.position, {})
 
     def generate_stat(self, mean, std_dev, min_value=0, max_value=99):
         while True:
@@ -208,7 +192,7 @@ class Player:
                 athletic_stats['Physical Power'] += adjustment
                 athletic_stats['Speed'] -= adjustment
                 athletic_stats['Acceleration'] -= adjustment
-            if adjustment < 0 and self.position not in ['Defender', 'Goalkeeper', 'FullBack']:
+            if adjustment < 0 and self.position not in ['Defender', 'Goalkeeper', 'Fullback']:
                 athletic_stats['Dribbling'] -= adjustment
 
         for stat in athletic_stats:
@@ -294,7 +278,7 @@ class Player:
             athletic_stats['Speed'] = self.cap_stat(max(athletic_stats['Speed'], config['speed_adjustment']), 99)
             athletic_stats['Acceleration'] = self.cap_stat(
                 max(athletic_stats['Acceleration'], config['speed_adjustment']), 99)
-            if self.position not in ['Defender', 'Goalkeeper', 'FullBack']:
+            if self.position not in ['Defender', 'Goalkeeper', 'Fullback']:
                 athletic_stats['Dribbling'] = self.cap_stat(
                     max(athletic_stats['Dribbling'], config['dribbling_non_defender']), 99)
             else:

@@ -15,6 +15,4 @@ class Winger(Player):
                 return round(height)
 
     def get_stat_config(self):
-        base_stats = player_config['levels'].get(self.level, {})
-        position_stats = player_config['positions'][self.level].get('Winger', {})
-        return self.merge_configs(base_stats, position_stats)
+        return player_config['positions'][self.level].get('Winger', {})
