@@ -71,7 +71,7 @@ class Player:
             k=1
         )[0]
         # Weaker foot level
-        if random.random() < 0.01:  # 1% chance for ambidextrous
+        if random.random() < 0.1:  # 10% chance for ambidextrous
             weaker_foot_level = 3
         else:
             weaker_foot_level = random.choices(
