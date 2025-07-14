@@ -10,7 +10,7 @@ app = FastAPI(
 
 # Define the allowed origins
 origins = [
-    "https://soccersimulator.github.io",  # Your GitHub Pages URL
+    "https://soccervision.github.io",  # Your GitHub Pages URL
     "http://localhost:3000",
 ]
 
