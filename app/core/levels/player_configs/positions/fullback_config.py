@@ -5,98 +5,98 @@ from app.core.levels.player_configs.excellent_config import excellent_adjustment
 fullback_stats = {
     "weaker": {
         **weaker_adjustments,
-        'Mental': {
-            **weaker_adjustments["Mental"],
-            'Composure': {'mean': 40, 'std_dev': 6},
+        'mental': {
+            **weaker_adjustments["mental"],
+            'composure': {'mean': 40, 'std_dev': 6},
         },
-        "Defense": {
-            **weaker_adjustments["Defense"],
-            "Tackling": {"mean": 55, "std_dev": 4},
-            "Marking": {"mean": 55, "std_dev": 4},
-            "Positioning": {"mean": 50, "std_dev": 4},
+        "defense": {
+            **weaker_adjustments["defense"],
+            "tackling": {"mean": 55, "std_dev": 4},
+            "marking": {"mean": 55, "std_dev": 4},
+            "positioning": {"mean": 50, "std_dev": 4},
         },
-        'Attack': {
-            **weaker_adjustments["Attack"],
-            'Finishing': {'mean': 30, 'std_dev': 4},
-            'Long Shots': {'mean': 35, 'std_dev': 4},
-            'Off The Ball': {'mean': 45, 'std_dev': 4},
+        'attack': {
+            **weaker_adjustments["attack"],
+            'finishing': {'mean': 30, 'std_dev': 4},
+            'long_shots': {'mean': 35, 'std_dev': 4},
+            'off_the_ball': {'mean': 45, 'std_dev': 4},
         },
-        'Playmaking': {
-            **weaker_adjustments["Playmaking"],
-            'Crossing': {'mean': 50, 'std_dev': 4},
+        'playmaking': {
+            **weaker_adjustments["playmaking"],
+            'crossing': {'mean': 50, 'std_dev': 4},
         },
-        'Athletic': {
-            **weaker_adjustments["Athletic"],
-            'Physical Power': {'mean': 45, 'std_dev': 6},
-            'Ball Control': {'mean': 45, 'std_dev': 4},
-            'Dribbling': {'mean': 45, 'std_dev': 4},
-            'Jumping': {'mean': 45, 'std_dev': 8},
-            'Acceleration': {'mean': 54, 'std_dev': 8},
-            'Speed': {'mean': 55, 'std_dev': 8},
+        'athletic': {
+            **weaker_adjustments["athletic"],
+            'physical_power': {'mean': 45, 'std_dev': 6},
+            'ball_control': {'mean': 45, 'std_dev': 4},
+            'dribbling': {'mean': 45, 'std_dev': 4},
+            'jumping': {'mean': 45, 'std_dev': 8},
+            'acceleration': {'mean': 54, 'std_dev': 8},
+            'speed': {'mean': 55, 'std_dev': 8},
         },
     },
     "normal": {
         **normal_adjustments,
-        "Mental": {
-            **normal_adjustments["Mental"],
-            'Composure': {'mean': 55, 'std_dev': 6},
+        "mental": {
+            **normal_adjustments["mental"],
+            'composure': {'mean': 55, 'std_dev': 6},
         },
-        "Playmaking": {
-            **normal_adjustments["Playmaking"],
-            'Crossing': {'mean': 70, 'std_dev': 4},
+        "playmaking": {
+            **normal_adjustments["playmaking"],
+            'crossing': {'mean': 70, 'std_dev': 4},
         },
-        'Defense': {
-            **normal_adjustments["Defense"],
-            'Tackling': {'mean': 70, 'std_dev': 4},
-            'Marking': {'mean': 70, 'std_dev': 4},
-            'Positioning': {'mean': 65, 'std_dev': 4},
+        'defense': {
+            **normal_adjustments["defense"],
+            'tackling': {'mean': 70, 'std_dev': 4},
+            'marking': {'mean': 70, 'std_dev': 4},
+            'positioning': {'mean': 65, 'std_dev': 4},
         },
-        'Attack': {
-            **normal_adjustments["Attack"],
-            'Finishing': {'mean': 35, 'std_dev': 4},
-            'Long Shots': {'mean': 40, 'std_dev': 4},
-            'Off The Ball': {'mean': 50, 'std_dev': 4},
+        'attack': {
+            **normal_adjustments["attack"],
+            'finishing': {'mean': 35, 'std_dev': 4},
+            'long_shots': {'mean': 40, 'std_dev': 4},
+            'off_the_ball': {'mean': 50, 'std_dev': 4},
         },
-        'Athletic': {
-            **normal_adjustments["Athletic"],
-            'Physical Power': {'mean': 60, 'std_dev': 8},
-            'Ball Control': {'mean': 60, 'std_dev': 4},
-            'Dribbling': {'mean': 60, 'std_dev': 4},
-            'Jumping': {'mean': 60, 'std_dev': 8},
-            'Acceleration': {'mean': 70, 'std_dev': 8},
-            'Speed': {'mean': 70, 'std_dev': 8},
+        'athletic': {
+            **normal_adjustments["athletic"],
+            'physical_power': {'mean': 60, 'std_dev': 8},
+            'ball_control': {'mean': 60, 'std_dev': 4},
+            'dribbling': {'mean': 60, 'std_dev': 4},
+            'jumping': {'mean': 60, 'std_dev': 8},
+            'acceleration': {'mean': 70, 'std_dev': 8},
+            'speed': {'mean': 70, 'std_dev': 8},
         },
     },
     "excellent": {
         **excellent_adjustments,
-        "Mental": {
-            **excellent_adjustments["Mental"],
-            'Composure': {'mean': 55, 'std_dev': 6},
+        "mental": {
+            **excellent_adjustments["mental"],
+            'composure': {'mean': 55, 'std_dev': 6},
         },
-        "Playmaking": {
-            **excellent_adjustments["Playmaking"],
-            'Crossing': {'mean': 70, 'std_dev': 4},
+        "playmaking": {
+            **excellent_adjustments["playmaking"],
+            'crossing': {'mean': 70, 'std_dev': 4},
         },
-        'Defense': {
-            **excellent_adjustments["Defense"],
-            'Tackling': {'mean': 80, 'std_dev': 4},
-            'Marking': {'mean': 80, 'std_dev': 4},
-            'Positioning': {'mean': 75, 'std_dev': 4},
+        'defense': {
+            **excellent_adjustments["defense"],
+            'tackling': {'mean': 80, 'std_dev': 4},
+            'marking': {'mean': 80, 'std_dev': 4},
+            'positioning': {'mean': 75, 'std_dev': 4},
         },
-        'Attack': {
-            **excellent_adjustments["Attack"],
-            'Finishing': {'mean': 35, 'std_dev': 4},
-            'Long Shots': {'mean': 40, 'std_dev': 4},
-            'Off The Ball': {'mean': 50, 'std_dev': 4},
+        'attack': {
+            **excellent_adjustments["attack"],
+            'finishing': {'mean': 35, 'std_dev': 4},
+            'long_shots': {'mean': 40, 'std_dev': 4},
+            'off_the_ball': {'mean': 50, 'std_dev': 4},
         },
-        'Athletic': {
-            **excellent_adjustments["Athletic"],
-            'Physical Power': {'mean': 60, 'std_dev': 8},
-            'Ball Control': {'mean': 60, 'std_dev': 4},
-            'Dribbling': {'mean': 60, 'std_dev': 4},
-            'Jumping': {'mean': 60, 'std_dev': 8},
-            'Acceleration': {'mean': 70, 'std_dev': 8},
-            'Speed': {'mean': 70, 'std_dev': 8},
+        'athletic': {
+            **excellent_adjustments["athletic"],
+            'physical_power': {'mean': 60, 'std_dev': 8},
+            'ball_control': {'mean': 60, 'std_dev': 4},
+            'dribbling': {'mean': 60, 'std_dev': 4},
+            'jumping': {'mean': 60, 'std_dev': 8},
+            'acceleration': {'mean': 70, 'std_dev': 8},
+            'speed': {'mean': 70, 'std_dev': 8},
         },
     }
 }

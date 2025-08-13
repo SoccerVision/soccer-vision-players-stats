@@ -5,78 +5,78 @@ from app.core.levels.player_configs.excellent_config import excellent_adjustment
 goalkeeper_stats = {
     "weaker": {
         **weaker_adjustments,
-        'Mental': {
-            **weaker_adjustments["Mental"],
-            'Composure': {'mean': 35, 'std_dev': 6},
+        'mental': {
+            **weaker_adjustments["mental"],
+            'composure': {'mean': 35, 'std_dev': 6},
         },
-        'Set Pieces': {
-            **weaker_adjustments["Set Pieces"],
-            'Free Kicks': {'mean': 20, 'std_dev': 5, 'min': 20, 'max': 55},
-            'Penalty': {'mean': 20, 'std_dev': 5, 'min': 20, 'max': 55},
+        'set_pieces': {
+            **weaker_adjustments["set_pieces"],
+            'free_kicks': {'mean': 20, 'std_dev': 5, 'min': 20, 'max': 55},
+            'penalty': {'mean': 20, 'std_dev': 5, 'min': 20, 'max': 55},
         },
-        'Goalkeeping': {
-            'Aerial Ability': {'mean': 55, 'std_dev': 4},
-            'Handling': {'mean': 60, 'std_dev': 4},
-            'Kicking': {'mean': 45, 'std_dev': 4},
-            'One on One': {'mean': 57, 'std_dev': 4},
-            'Reflexes': {'mean': 42, 'std_dev': 4},
+        'goalkeeping': {
+            'aerial_ability': {'mean': 55, 'std_dev': 4},
+            'handling': {'mean': 60, 'std_dev': 4},
+            'kicking': {'mean': 45, 'std_dev': 4},
+            'one_on_one': {'mean': 57, 'std_dev': 4},
+            'reflexes': {'mean': 42, 'std_dev': 4},
         },
-        'Athletic': {
-            **weaker_adjustments["Athletic"],
-            'Physical Power': {'mean': 55, 'std_dev': 8},
-            'Ball Control': {'mean': 35, 'std_dev': 4},
-            'Dribbling': {'mean': 25, 'std_dev': 4},
-            'Jumping': {'mean': 55, 'std_dev': 8},
-            'Acceleration': {'mean': 40, 'std_dev': 8},
-            'Speed': {'mean': 40, 'std_dev': 8},
+        'athletic': {
+            **weaker_adjustments["athletic"],
+            'physical_power': {'mean': 55, 'std_dev': 8},
+            'ball_control': {'mean': 35, 'std_dev': 4},
+            'dribbling': {'mean': 25, 'std_dev': 4},
+            'jumping': {'mean': 55, 'std_dev': 8},
+            'acceleration': {'mean': 40, 'std_dev': 8},
+            'speed': {'mean': 40, 'std_dev': 8},
         },
     },
     "normal": {
         **normal_adjustments,
-        'Set Pieces': {
-            **normal_adjustments["Set Pieces"],
-            'Free Kicks': {'mean': 30, 'std_dev': 5, 'min': 20, 'max': 50},
-            'Penalty': {'mean': 30, 'std_dev': 5, 'min': 20, 'max': 50},
+        'set_pieces': {
+            **normal_adjustments["set_pieces"],
+            'free_kicks': {'mean': 30, 'std_dev': 5, 'min': 20, 'max': 50},
+            'penalty': {'mean': 30, 'std_dev': 5, 'min': 20, 'max': 50},
         },
-        "Goalkeeping": {
-            'Aerial Ability': {'mean': 70, 'std_dev': 4},
-            'Handling': {'mean': 75, 'std_dev': 4},
-            'Kicking': {'mean': 60, 'std_dev': 4},
-            'One on One': {'mean': 72, 'std_dev': 4},
-            'Reflexes': {'mean': 75, 'std_dev': 4},
+        "goalkeeping": {
+            'aerial_ability': {'mean': 70, 'std_dev': 4},
+            'handling': {'mean': 75, 'std_dev': 4},
+            'kicking': {'mean': 60, 'std_dev': 4},
+            'one_on_one': {'mean': 72, 'std_dev': 4},
+            'reflexes': {'mean': 75, 'std_dev': 4},
         },
-        'Athletic': {
-            **normal_adjustments["Athletic"],
-            'Physical Power': {'mean': 70, 'std_dev': 8},
-            'Ball Control': {'mean': 50, 'std_dev': 4},
-            'Dribbling': {'mean': 40, 'std_dev': 4},
-            'Jumping': {'mean': 70, 'std_dev': 8},
-            'Acceleration': {'mean': 55, 'std_dev': 8},
-            'Speed': {'mean': 55, 'std_dev': 8},
+        'athletic': {
+            **normal_adjustments["athletic"],
+            'physical_power': {'mean': 70, 'std_dev': 8},
+            'ball_control': {'mean': 50, 'std_dev': 4},
+            'dribbling': {'mean': 40, 'std_dev': 4},
+            'jumping': {'mean': 70, 'std_dev': 8},
+            'acceleration': {'mean': 55, 'std_dev': 8},
+            'speed': {'mean': 55, 'std_dev': 8},
         },
     },
     "excellent": {
         **excellent_adjustments,
-        'Goalkeeping': {
-            'Aerial Ability': {'mean': 90, 'std_dev': 4},
-            'Handling': {'mean': 95, 'std_dev': 4},
-            'Kicking': {'mean': 80, 'std_dev': 4},
-            'One on One': {'mean': 92, 'std_dev': 4},
-            'Reflexes': {'mean': 95, 'std_dev': 4},
+        'goalkeeping': {
+            'aerial_ability': {'mean': 90, 'std_dev': 4},
+            'handling': {'mean': 95, 'std_dev': 4},
+            'kicking': {'mean': 80, 'std_dev': 4},
+            'one_on_one': {'mean': 92, 'std_dev': 4},
+            'reflexes': {'mean': 95, 'std_dev': 4},
         },
-        "Set Pieces": {
-            **excellent_adjustments["Set Pieces"],
-            'Free Kicks': {'mean': 50, 'std_dev': 5, 'min': 20, 'max': 70},
-            'Penalty': {'mean': 50, 'std_dev': 5, 'min': 20, 'max': 70},
+        "set_pieces": {
+            **excellent_adjustments["set_pieces"],
+            'free_kicks': {'mean': 50, 'std_dev': 5, 'min': 20, 'max': 70},
+            'penalty': {'mean': 50, 'std_dev': 5, 'min': 20, 'max': 70},
         },
-        'Athletic': {
-            **excellent_adjustments["Athletic"],
-            'Physical Power': {'mean': 90, 'std_dev': 8},
-            'Ball Control': {'mean': 70, 'std_dev': 4},
-            'Dribbling': {'mean': 60, 'std_dev': 4},
-            'Jumping': {'mean': 90, 'std_dev': 8},
-            'Acceleration': {'mean': 75, 'std_dev': 8},
-            'Speed': {'mean': 75, 'std_dev': 8},
+        'athletic': {
+            **excellent_adjustments["athletic"],
+            'physical_power': {'mean': 90, 'std_dev': 8},
+            'ball_control': {'mean': 70, 'std_dev': 4},
+            'dribbling': {'mean': 60, 'std_dev': 4},
+            'jumping': {'mean': 90, 'std_dev': 8},
+            'acceleration': {'mean': 75, 'std_dev': 8},
+            'speed': {'mean': 75, 'std_dev': 8},
         },
     }
 }

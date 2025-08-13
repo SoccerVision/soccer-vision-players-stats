@@ -6,7 +6,7 @@ from app.core.levels.player_config import player_config
 class Fullback(Player):
     def __init__(self, level='normal', dominant_foot=None, assigned_numbers: set = None, ):
         self.forced_dominant_foot = dominant_foot  # Store the forced dominant foot
-        super().__init__('FullBack', level=level, assigned_numbers=assigned_numbers)
+        super().__init__('fullback', level=level, assigned_numbers=assigned_numbers)
 
     def assign_preferred_foot(self):
         if self.forced_dominant_foot:
@@ -29,9 +29,9 @@ class Fullback(Player):
                 k=1
             )[0]
         return {
-            'Dominant Foot': dominant_foot,
-            'Weak Foot Level': weaker_foot_level
+            'dominant_foot': dominant_foot,
+            'weak_foot_level': weaker_foot_level
         }
 
     def get_stat_config(self):
-        return player_config['positions'][self.level].get('Fullback', {})
+        return player_config['positions'][self.level].get('fullback', {})

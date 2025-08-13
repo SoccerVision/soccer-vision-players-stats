@@ -15,7 +15,7 @@ def generate_normal_team():
             player = position_class(level='normal', assigned_numbers=assigned_numbers)
             # Ensure at least one left-footed and one right-footed fullback
             if ensure_foot:
-                while player.preferred_foot['Dominant Foot'] != ensure_foot:
+                while player.preferred_foot['dominant_foot'] != ensure_foot:
                     player = position_class(level='normal', assigned_numbers=assigned_numbers)
                 ensure_foot = None  # Only ensure foot for one player
             team.append(player)

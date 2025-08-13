@@ -80,8 +80,8 @@ class Player:
                 k=1
             )[0]
         return {
-            'Dominant Foot': dominant_foot,
-            'Weak Foot Level': weaker_foot_level
+            'dominant_foot': dominant_foot,
+            'weak_foot_level': weaker_foot_level
         }
 
     def assign_stamina(self):
@@ -170,48 +170,48 @@ class Player:
                     player_stats[category][stat] = self.cap_stat(round(player_stats[category][stat] * multiplier), 99)
 
     def apply_height_adjustments(self, player_stats):
-        athletic_stats = player_stats['Athletic']
+        athletic_stats = player_stats['athletic']
 
-        if 'Heading' not in athletic_stats:
-            athletic_stats['Heading'] = self.generate_stat(athletic_stats['Jumping'], 4)
+        if 'heading' not in athletic_stats:
+            athletic_stats['heading'] = self.generate_stat(athletic_stats['jumping'], 4)
 
         if self.height > 185:
             increase_percentage = random.uniform(0.10, 0.12)
-            athletic_stats['Jumping'] = self.cap_stat(round(athletic_stats['Jumping'] * (1 + increase_percentage)))
-            athletic_stats['Heading'] = self.cap_stat(round(athletic_stats['Heading'] * (1 + increase_percentage)))
+            athletic_stats['jumping'] = self.cap_stat(round(athletic_stats['jumping'] * (1 + increase_percentage)))
+            athletic_stats['heading'] = self.cap_stat(round(athletic_stats['heading'] * (1 + increase_percentage)))
 
             height_diff = self.height - 181
             adjustment = int(height_diff / 3)
             adjustment = self.cap_stat(max(-5, min(5, adjustment)), 99)
-            athletic_stats['Physical Power'] += adjustment
+            athletic_stats['physical_power'] += adjustment
 
-            athletic_stats['Speed'] -= adjustment
-            athletic_stats['Acceleration'] -= adjustment
+            athletic_stats['speed'] -= adjustment
+            athletic_stats['acceleration'] -= adjustment
         else:
             height_diff = self.height - 181
             adjustment = int(height_diff / 3)
             adjustment = self.cap_stat(max(-5, min(5, adjustment)), 99)
             if adjustment != 0:
-                athletic_stats['Jumping'] += adjustment
-                athletic_stats['Heading'] += adjustment
-                athletic_stats['Physical Power'] += adjustment
-                athletic_stats['Speed'] -= adjustment
-                athletic_stats['Acceleration'] -= adjustment
-            if adjustment < 0 and self.position not in ['Defender', 'Goalkeeper', 'Fullback']:
-                athletic_stats['Dribbling'] -= adjustment
+                athletic_stats['jumping'] += adjustment
+                athletic_stats['heading'] += adjustment
+                athletic_stats['physical_power'] += adjustment
+                athletic_stats['speed'] -= adjustment
+                athletic_stats['acceleration'] -= adjustment
+            if adjustment < 0 and self.position not in ['defender', 'goalkeeper', 'fullback']:
+                athletic_stats['dribbling'] -= adjustment
 
         for stat in athletic_stats:
             athletic_stats[stat] = self.cap_stat(max(1, min(99, athletic_stats.get(stat, 50))), 99)
 
     def apply_preferred_foot_adjustments(self, player_stats):
-        weak_foot_level = self.preferred_foot['Weak Foot Level']
+        weak_foot_level = self.preferred_foot['weak_foot_level']
         if weak_foot_level == 3:
-            if 'Attack' in player_stats:
-                player_stats['Attack']['Finishing'] = self.cap_stat(player_stats['Attack'].get('Finishing', 0) + 5, 99)
-                player_stats['Attack']['Long Shots'] = self.cap_stat(player_stats['Attack'].get('Long Shots', 0) + 5,
+            if 'attack' in player_stats:
+                player_stats['attack']['finishing'] = self.cap_stat(player_stats['attack'].get('finishing', 0) + 5, 99)
+                player_stats['attack']['long_shots'] = self.cap_stat(player_stats['attack'].get('long_shots', 0) + 5,
                                                                      99)
-            if 'Athletic' in player_stats:
-                player_stats['Athletic']['Dribbling'] = self.cap_stat(player_stats['Athletic'].get('Dribbling', 0) + 5,
+            if 'athletic' in player_stats:
+                player_stats['athletic']['dribbling'] = self.cap_stat(player_stats['athletic'].get('dribbling', 0) + 5,
                                                                       99)
 
     def additional_calculations(self, player_stats):
@@ -258,8 +258,8 @@ class Player:
         }
         config = LEVEL_CONFIG.get(self.level.lower(), LEVEL_CONFIG['normal'])
 
-        athletic_stats = player_stats['Athletic']
-        athletic_stats['Heading'] = self.generate_stat(athletic_stats['Jumping'], 4)
+        athletic_stats = player_stats['athletic']
+        athletic_stats['heading'] = self.generate_stat(athletic_stats['jumping'], 4)
 
         self._balance_athletic_stats(athletic_stats, config)
         self._adjust_physical_power(athletic_stats, config)
@@ -267,53 +267,53 @@ class Player:
 
     def _balance_athletic_stats(self, athletic_stats, config):
         speed_stats = [
-            athletic_stats.get('Speed', config['default']),
-            athletic_stats.get('Acceleration', config['default']),
-            athletic_stats.get('Dribbling', config['default'])
+            athletic_stats.get('speed', config['default']),
+            athletic_stats.get('acceleration', config['default']),
+            athletic_stats.get('dribbling', config['default'])
         ]
         heading_stats = [
-            athletic_stats.get('Jumping', config['default']),
-            athletic_stats.get('Heading', config['default'])
+            athletic_stats.get('jumping', config['default']),
+            athletic_stats.get('heading', config['default'])
         ]
 
         if all(stat < config['threshold'] for stat in speed_stats):
-            athletic_stats['Jumping'] = self.cap_stat(max(athletic_stats['Jumping'], config['jumping_adjustment']), 99)
-            athletic_stats['Heading'] = self.cap_stat(max(athletic_stats['Heading'], config['heading_adjustment']), 99)
+            athletic_stats['jumping'] = self.cap_stat(max(athletic_stats['jumping'], config['jumping_adjustment']), 99)
+            athletic_stats['heading'] = self.cap_stat(max(athletic_stats['heading'], config['heading_adjustment']), 99)
         elif all(stat < config['threshold'] for stat in heading_stats):
-            athletic_stats['Speed'] = self.cap_stat(max(athletic_stats['Speed'], config['speed_adjustment']), 99)
-            athletic_stats['Acceleration'] = self.cap_stat(
-                max(athletic_stats['Acceleration'], config['speed_adjustment']), 99)
-            if self.position not in ['Defender', 'Goalkeeper', 'Fullback']:
-                athletic_stats['Dribbling'] = self.cap_stat(
-                    max(athletic_stats['Dribbling'], config['dribbling_non_defender']), 99)
+            athletic_stats['speed'] = self.cap_stat(max(athletic_stats['speed'], config['speed_adjustment']), 99)
+            athletic_stats['acceleration'] = self.cap_stat(
+                max(athletic_stats['acceleration'], config['speed_adjustment']), 99)
+            if self.position not in ['defender', 'goalkeeper', 'fullback']:
+                athletic_stats['dribbling'] = self.cap_stat(
+                    max(athletic_stats['dribbling'], config['dribbling_non_defender']), 99)
             else:
-                athletic_stats['Dribbling'] = self.cap_stat(
-                    max(athletic_stats['Dribbling'], config['dribbling_defender']), 99)
+                athletic_stats['dribbling'] = self.cap_stat(
+                    max(athletic_stats['dribbling'], config['dribbling_defender']), 99)
 
     def _adjust_physical_power(self, athletic_stats, config):
-        if athletic_stats['Jumping'] > config['physical_power_threshold']:
-            athletic_stats['Physical Power'] = self.cap_stat(
-                max(athletic_stats['Physical Power'], config['physical_power_threshold']), 99)
+        if athletic_stats['jumping'] > config['physical_power_threshold']:
+            athletic_stats['physical_power'] = self.cap_stat(
+                max(athletic_stats['physical_power'], config['physical_power_threshold']), 99)
 
-        if athletic_stats['Acceleration'] < config['physical_power_threshold'] or athletic_stats['Speed'] < config[
+        if athletic_stats['acceleration'] < config['physical_power_threshold'] or athletic_stats['speed'] < config[
             'physical_power_threshold']:
-            athletic_stats['Physical Power'] = self.cap_stat(self.generate_stat(config['physical_power_stat'], 4), 99)
+            athletic_stats['physical_power'] = self.cap_stat(self.generate_stat(config['physical_power_stat'], 4), 99)
 
     def _correlate_set_pieces(self, player_stats, config):
-        attack_stats = player_stats.get('Attack', {})
-        playmaking_stats = player_stats.get('Playmaking', {})
-        set_pieces = player_stats.get('Set Pieces', {})
+        attack_stats = player_stats.get('attack', {})
+        playmaking_stats = player_stats.get('playmaking', {})
+        set_pieces = player_stats.get('set_pieces', {})
 
         if attack_stats and set_pieces:
-            if attack_stats.get('Finishing', 0) > config['finishing_threshold'] or attack_stats.get('Off The Ball', 0) > \
+            if attack_stats.get('finishing', 0) > config['finishing_threshold'] or attack_stats.get('off_the_ball', 0) > \
                     config['finishing_threshold']:
-                if 'Penalty' in set_pieces:
-                    set_pieces['Penalty'] = self.cap_stat(set_pieces['Penalty'] + config['set_pieces_increment'], 99)
+                if 'penalty' in set_pieces:
+                    set_pieces['penalty'] = self.cap_stat(set_pieces['penalty'] + config['set_pieces_increment'], 99)
 
-            if attack_stats.get('Long Shots', 0) > config['finishing_threshold'] or playmaking_stats.get('Passing', 0) > \
+            if attack_stats.get('long_shots', 0) > config['finishing_threshold'] or playmaking_stats.get('passing', 0) > \
                     config['finishing_threshold']:
-                if 'Free Kicks' in set_pieces:
-                    set_pieces['Free Kicks'] = self.cap_stat(set_pieces['Free Kicks'] + config['set_pieces_increment'],
+                if 'free_kicks' in set_pieces:
+                    set_pieces['free_kicks'] = self.cap_stat(set_pieces['free_kicks'] + config['set_pieces_increment'],
                                                              99)
 
     def calculate_averages(self):
@@ -325,17 +325,17 @@ class Player:
 
     def to_dict(self):
         return {
-            'Name': self.name,
-            'Shirt_Number': self.shirt_number,
-            'Position': self.position,
-            "Level": self.level.capitalize(),
-            'Age': self.age,
-            'Height': self.height,
-            'Preferred_Foot': self.preferred_foot,
-            'Stamina': self.stamina,
-            'Fitness': self.fitness,
-            'Nationality': self.nationality,
-            'Stats': self.stats,
-            'Averages': self.averages,
-            'ID': self.id
+            'name': self.name,
+            'shirt_number': self.shirt_number,
+            'position': self.position,
+            "level": self.level.capitalize(),
+            'age': self.age,
+            'height': self.height,
+            'preferred_foot': self.preferred_foot,
+            'stamina': self.stamina,
+            'fitness': self.fitness,
+            'nationality': self.nationality,
+            'stats': self.stats,
+            'averages': self.averages,
+            'id': self.id
         }

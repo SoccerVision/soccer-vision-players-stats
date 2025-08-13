@@ -5,10 +5,10 @@ from app.core.levels.player_config import player_config
 
 class Midfielder(Player):
     def __init__(self, level='normal', assigned_numbers: set = None):
-        super().__init__(position='Midfielder', level=level, assigned_numbers=assigned_numbers)
+        super().__init__(position='midfielder', level=level, assigned_numbers=assigned_numbers)
 
     def get_stat_config(self):
-        return player_config['positions'][self.level].get('Midfielder', {})
+        return player_config['positions'][self.level].get('midfielder', {})
 
     def generate_stats(self):
         player_stats = super().generate_stats()  # Get the base stats
@@ -47,13 +47,13 @@ class Midfielder(Player):
     def apply_attack_boost(self, player_stats, level_configs):
         # Apply an attack boost to the player's stats
         attack_boost = level_configs[self.level].get('attack_boost', 1)
-        for stat_name in player_stats['Attack']:
-            original_value = player_stats['Attack'][stat_name]
-            player_stats['Attack'][stat_name] = self.cap_stat(round(original_value * attack_boost), 99)
+        for stat_name in player_stats['attack']:
+            original_value = player_stats['attack'][stat_name]
+            player_stats['attack'][stat_name] = self.cap_stat(round(original_value * attack_boost), 99)
 
     def apply_defense_boost(self, player_stats, level_configs):
         # Apply a defense boost to the player's stats
         defense_boost = level_configs[self.level].get('defense_boost', 1)
-        for stat_name in player_stats['Defense']:
-            original_value = player_stats['Defense'][stat_name]
-            player_stats['Defense'][stat_name] = self.cap_stat(round(original_value * defense_boost), 99)
+        for stat_name in player_stats['defense']:
+            original_value = player_stats['defense'][stat_name]
+            player_stats['defense'][stat_name] = self.cap_stat(round(original_value * defense_boost), 99)

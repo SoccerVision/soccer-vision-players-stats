@@ -4,7 +4,7 @@ from app.core.levels.player_config import player_config
 
 class Defender(Player):
     def __init__(self, level='normal', assigned_numbers: set = None):
-        super().__init__('Defender', level=level, assigned_numbers=assigned_numbers)
+        super().__init__('defender', level=level, assigned_numbers=assigned_numbers)
 
     def assign_height(self):
         # Generate height with normal distribution centered at 183 cm
@@ -19,4 +19,4 @@ class Defender(Player):
                     return round(height)
 
     def get_stat_config(self):
-        return player_config['positions'][self.level].get('Defender', {})
+        return player_config['positions'][self.level].get('defender', {})

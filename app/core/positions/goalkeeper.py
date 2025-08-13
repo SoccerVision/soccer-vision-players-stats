@@ -1,11 +1,10 @@
 import random
-from app.core.levels.player_config import player_config
 from app.core.player import Player
-
+from app.core.levels.player_config import player_config
 
 class Goalkeeper(Player):
-    def __init__(self, level='normal', assigned_numbers: set = None, ):
-        super().__init__('Goalkeeper', level=level, assigned_numbers=assigned_numbers)
+    def __init__(self, level='normal', assigned_numbers: set = None):
+        super().__init__('goalkeeper', level=level, assigned_numbers=assigned_numbers)
 
     def assign_height(self):
         # Generate height with normal distribution centered at 183 cm
@@ -20,11 +19,11 @@ class Goalkeeper(Player):
                     return round(height)
 
     def get_stat_config(self):
-        position_stats = player_config['positions'][self.level].get('Goalkeeper', {})
+        position_stats = player_config['positions'][self.level].get('goalkeeper', {})
 
         # Remove irrelevant stats
-        position_stats.pop('Attack', None)
-        position_stats.pop('Playmaking', None)
-        position_stats.pop('Defense', None)
+        position_stats.pop('attack', None)
+        position_stats.pop('playmaking', None)
+        position_stats.pop('defense', None)
 
         return position_stats

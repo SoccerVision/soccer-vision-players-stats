@@ -5,47 +5,47 @@ from app.core.levels.player_configs.excellent_config import excellent_adjustment
 midfielder_stats = {
     "weaker": {
         **weaker_adjustments,
-        'Attack': {
-            **weaker_adjustments["Attack"],
-            'Finishing': {'mean': 35, 'std_dev': 4},
-            'Long Shots': {'mean': 45, 'std_dev': 4},
-            'Off The Ball': {'mean': 40, 'std_dev': 4},
+        'attack': {
+            **weaker_adjustments["attack"],
+            'finishing': {'mean': 35, 'std_dev': 4},
+            'long_shots': {'mean': 45, 'std_dev': 4},
+            'off_the_ball': {'mean': 40, 'std_dev': 4},
         },
-        'Playmaking': {
-            **weaker_adjustments["Playmaking"],
-            'Creative': {'mean': 55, 'std_dev': 4},
-            'Passing': {'mean': 57, 'std_dev': 4},
-            'Crossing': {'mean': 55, 'std_dev': 4},
+        'playmaking': {
+            **weaker_adjustments["playmaking"],
+            'creative': {'mean': 55, 'std_dev': 4},
+            'passing': {'mean': 57, 'std_dev': 4},
+            'crossing': {'mean': 55, 'std_dev': 4},
         },
     },
     "normal": {
         **normal_adjustments,
-        'Attack': {
-            **normal_adjustments["Attack"],
-            'Finishing': {'mean': 50, 'std_dev': 4},
-            'Long Shots': {'mean': 60, 'std_dev': 4},
-            'Off The Ball': {'mean': 55, 'std_dev': 4},
+        'attack': {
+            **normal_adjustments["attack"],
+            'finishing': {'mean': 50, 'std_dev': 4},
+            'long_shots': {'mean': 60, 'std_dev': 4},
+            'off_the_ball': {'mean': 55, 'std_dev': 4},
         },
-        'Playmaking': {
-            **normal_adjustments["Playmaking"],
-            'Creative': {'mean': 70, 'std_dev': 4},
-            'Passing': {'mean': 72, 'std_dev': 4},
-            'Crossing': {'mean': 70, 'std_dev': 4},
+        'playmaking': {
+            **normal_adjustments["playmaking"],
+            'creative': {'mean': 70, 'std_dev': 4},
+            'passing': {'mean': 72, 'std_dev': 4},
+            'crossing': {'mean': 70, 'std_dev': 4},
         },
     },
     "excellent": {
         **excellent_adjustments,
-        'Attack': {
-            **excellent_adjustments["Attack"],
-            'Finishing': {'mean': 70, 'std_dev': 4},
-            'Long Shots': {'mean': 80, 'std_dev': 4},
-            'Off The Ball': {'mean': 75, 'std_dev': 4},
+        'attack': {
+            **excellent_adjustments["attack"],
+            'finishing': {'mean': 70, 'std_dev': 4},
+            'long_shots': {'mean': 80, 'std_dev': 4},
+            'off_the_ball': {'mean': 75, 'std_dev': 4},
         },
-        'Playmaking': {
-            **excellent_adjustments["Playmaking"],
-            'Creative': {'mean': 90, 'std_dev': 4},
-            'Passing': {'mean': 92, 'std_dev': 4},
-            'Crossing': {'mean': 90, 'std_dev': 4},
+        'playmaking': {
+            **excellent_adjustments["playmaking"],
+            'creative': {'mean': 90, 'std_dev': 4},
+            'passing': {'mean': 92, 'std_dev': 4},
+            'crossing': {'mean': 90, 'std_dev': 4},
         },
     }
 }

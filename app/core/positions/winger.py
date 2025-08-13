@@ -5,7 +5,7 @@ from app.core.levels.player_config import player_config
 
 class Winger(Player):
     def __init__(self, level='normal', assigned_numbers: set = None):
-        super().__init__('Winger', level=level, assigned_numbers=assigned_numbers)
+        super().__init__('winger', level=level, assigned_numbers=assigned_numbers)
 
     def assign_height(self):
         # Lower base height for wingers to 175 cm
@@ -15,4 +15,4 @@ class Winger(Player):
                 return round(height)
 
     def get_stat_config(self):
-        return player_config['positions'][self.level].get('Winger', {})
+        return player_config['positions'][self.level].get('winger', {})

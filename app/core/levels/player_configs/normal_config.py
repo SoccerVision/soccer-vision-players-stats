@@ -1,37 +1,37 @@
 import random
 
 normal_adjustments = {
-        'Mental': {
-            'Aggression': {'mean': random.randint(10, 90), 'std_dev': 5},
-            'Teamwork': {'mean': random.randint(10, 90), 'std_dev': 5},
-            'Decisions': {'mean': random.randint(10, 90), 'std_dev': 5},
-            'Composure': {'mean': 50, 'std_dev': 6},
+        'mental': {
+            'aggression': {'mean': random.randint(10, 90), 'std_dev': 5},
+            'teamwork': {'mean': random.randint(10, 90), 'std_dev': 5},
+            'decisions': {'mean': random.randint(10, 90), 'std_dev': 5},
+            'composure': {'mean': 50, 'std_dev': 6},
         },
-        'Defense': {
-            'Tackling': {'mean': 50, 'std_dev': 4},
-            'Marking': {'mean': 50, 'std_dev': 4},
-            'Positioning': {'mean': 50, 'std_dev': 4},
+        'defense': {
+            'tackling': {'mean': 50, 'std_dev': 4},
+            'marking': {'mean': 50, 'std_dev': 4},
+            'positioning': {'mean': 50, 'std_dev': 4},
         },
-        'Attack': {
-            'Finishing': {'mean': 50, 'std_dev': 4},
-            'Long Shots': {'mean': 50, 'std_dev': 4},
-            'Off The Ball': {'mean': 50, 'std_dev': 4},
+        'attack': {
+            'finishing': {'mean': 50, 'std_dev': 4},
+            'long_shots': {'mean': 50, 'std_dev': 4},
+            'off_the_ball': {'mean': 50, 'std_dev': 4},
         },
-        'Playmaking': {
-            'Creative': {'mean': 50, 'std_dev': 4},
-            'Passing': {'mean': 50, 'std_dev': 4},
-            'Crossing': {'mean': 50, 'std_dev': 4},
+        'playmaking': {
+            'creative': {'mean': 50, 'std_dev': 4},
+            'passing': {'mean': 50, 'std_dev': 4},
+            'crossing': {'mean': 50, 'std_dev': 4},
         },
-        'Athletic': {
-            'Physical Power': {'mean': 55, 'std_dev': 8},
-            'Ball Control': {'mean': 60, 'std_dev': 4},
-            'Dribbling': {'mean': 60, 'std_dev': 4},
-            'Jumping': {'mean': 55, 'std_dev': 8},
-            'Acceleration': {'mean': 60, 'std_dev': 8},
-            'Speed': {'mean': 60, 'std_dev': 8},
+        'athletic': {
+            'physical_power': {'mean': 55, 'std_dev': 8},
+            'ball_control': {'mean': 60, 'std_dev': 4},
+            'dribbling': {'mean': 60, 'std_dev': 4},
+            'jumping': {'mean': 55, 'std_dev': 8},
+            'acceleration': {'mean': 60, 'std_dev': 8},
+            'speed': {'mean': 60, 'std_dev': 8},
         },
-        'Set Pieces': {
-            'Free Kicks': {'mean': 50, 'std_dev': 15, 'min': 30, 'max': 90},
-            'Penalty': {'mean': 60, 'std_dev': 15, 'min': 30, 'max': 90},
+        'set_pieces': {
+            'free_kicks': {'mean': 50, 'std_dev': 15, 'min': 30, 'max': 90},
+            'penalty': {'mean': 60, 'std_dev': 15, 'min': 30, 'max': 90},
         },
 }

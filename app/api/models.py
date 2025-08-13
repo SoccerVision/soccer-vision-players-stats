@@ -4,38 +4,38 @@ from pydantic import BaseModel
 from typing import Dict, Any
 
 class PlayerModel(BaseModel):
-    ID: str
-    Name: str
-    Shirt_Number: int
-    Position: str
-    Level: str
-    Age: int
-    Height: int
-    Preferred_Foot: Dict[str, Any]
-    Stamina: int
-    Fitness: str
-    Nationality: str
-    Stats: Dict[str, Dict[str, int]]
-    Averages: Dict[str, int]
+    id: str
+    name: str
+    shirt_number: int
+    position: str
+    level: str
+    age: int
+    height: int
+    preferred_foot: Dict[str, Any]
+    stamina: int
+    fitness: str
+    nationality: str
+    stats: Dict[str, Dict[str, int]]
+    averages: Dict[str, int]
 
     class Config:
         schema_extra = {
             "example": {
-                "ID": '688164b0-2ac5-4b8f-abd3-2c62459a356c',
-                "Name": "John Smith",
-                "Shirt_Number": 10,
-                "Level":"Weaker | Normal | Excellent",
-                "Position": "Midfielder",
-                "Age": 28,
-                "Height": 180,
-                "Preferred_Foot": {
-                    "Dominant Foot": "Right",
-                    "Weak Foot Level": 2
+                "id": '688164b0-2ac5-4b8f-abd3-2c62459a356c',
+                "name": "John Smith",
+                "shirt_number": 10,
+                "level":"Weaker | Normal | Excellent",
+                "position": "Midfielder",
+                "age": 28,
+                "height": 180,
+                "preferred_foot": {
+                    "dominant_foot": "Right",
+                    "weak_foot_level": 2
                 },
-                "Stamina": 85,
-                "Fitness": "Peak",
-                "Nationality": "CountryA",
-                "Stats": {
+                "stamina": 85,
+                "fitness": "Peak",
+                "nationality": "CountryA",
+                "stats": {
                     "Mental": {
                         "Aggression": 75,
                         "Composure": 80,
@@ -44,11 +44,11 @@ class PlayerModel(BaseModel):
                     },
                     "Athletic": {
                         "Acceleration": 85,
-                        "Ball Control": 88,
+                        "ball_control": 88,
                         "Dribbling": 90,
                         "Heading": 70,
                         "Jumping": 75,
-                        "Physical Power": 80,
+                        "physical_power": 80,
                         "Speed": 87
                     },
                     "Defense": {
@@ -58,8 +58,8 @@ class PlayerModel(BaseModel):
                     },
                     "Attack": {
                         "Finishing": 60,
-                        "Long Shots": 62,
-                        "Off The Ball": 68
+                        "long_shots": 62,
+                        "off_the_ball": 68
                     },
                     "Playmaking": {
                         "Creative": 72,
@@ -67,11 +67,11 @@ class PlayerModel(BaseModel):
                         "Crossing": 75
                     },
                     "Set Pieces": {
-                        "Free Kicks": 55,
+                        "free_kicks": 55,
                         "Penalty": 60
                     }
                 },
-                "Averages": {
+                "averages": {
                     "Mental": 79,
                     "Athletic": 83,
                     "Defense": 70,
