@@ -1,331 +1,234 @@
 import random
 import uuid
+from typing import Dict, Optional
+
 from app.core.levels.player_config import player_config
+from app.core import realism
+
+FIRST_NAMES = ['John', 'Michael', 'David', 'Chris', 'James', 'Robert', 'Daniel', 'William', 'Richard', 'Thomas',
+               'Lucas', 'Mateo', 'Luca', 'Noah', 'Leo', 'Omar', 'Yuki', 'Kofi', 'Ivan', 'Diego', 'Elias', 'Andre']
+LAST_NAMES = ['Smith', 'Johnson', 'Brown', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin',
+              'Silva', 'Garcia', 'Rossi', 'Muller', 'Novak', 'Mensah', 'Tanaka', 'Haddad', 'Kowalski', 'Moreau']
+DEFAULT_NATIONALITIES = ['CountryA', 'CountryB', 'CountryC']
+
+# Goalkeepers are rated on goalkeeping, not on outfield categories.
+GOALKEEPER_EXCLUDED_CATEGORIES = ('attack', 'playmaking', 'defense')
 
 
 class Player:
-    def __init__(self, position, level="normal", assigned_numbers: set = None):
+    """One generated player.
+
+    All randomness comes from `rng`, so a seeded `random.Random` reproduces the same player.
+    Optional arguments pin a property; anything left as None is generated.
+    """
+
+    def __init__(self, position: str, level: str = "normal", assigned_numbers: set = None, *,
+                 rng: Optional[random.Random] = None, age: Optional[int] = None, side: Optional[str] = None,
+                 role: Optional[str] = None, dominant_foot: Optional[str] = None,
+                 shirt_number: Optional[int] = None, squad_role: Optional[str] = None,
+                 nationalities=None):
+        if position not in realism.POSITION_SPECS:
+            raise ValueError(f"Unknown position '{position}'")
+        level = level.lower()
+        if level not in realism.LEVELS:
+            raise ValueError(f"Unknown level '{level}'")
+        self.rng = rng or random.Random()
         self.position = position
         self.level = level
-        self.id = self.assign_id()
+        self.spec = realism.POSITION_SPECS[position]
+        self.squad_role = squad_role
+        self.id = str(uuid.UUID(int=self.rng.getrandbits(128), version=4))
         self.name = self.assign_name()
-        self.shirt_number = self.assign_shirt_number(assigned_numbers)
-        self.age = self.assign_age()
+        self.shirt_number = shirt_number if shirt_number is not None else self.assign_shirt_number(assigned_numbers)
+        self.age = age if age is not None else self.assign_age()
+        self.side = self.assign_side(side)
+        self.role = self.assign_role(role)
         self.height = self.assign_height()
-        self.preferred_foot = self.assign_preferred_foot()
-        self.stamina = self.assign_stamina()
+        self.preferred_foot = self.assign_preferred_foot(dominant_foot)
+        self.weak_foot_stars = self.preferred_foot['weak_foot_stars']
         self.fitness = self.assign_fitness()
-        self.nationality = self.assign_nationality()
+        self.stamina = self.assign_stamina()
+        self.nationality = self.rng.choice(list(nationalities or DEFAULT_NATIONALITIES))
         self.stat_config = self.get_stat_config()
         self.stats = self.generate_stats()
         self.averages = self.calculate_averages()
+        self.overall = self.calculate_overall()
+        self.potential = self.calculate_potential()
 
-    # Assign unique ID to each player
-    def assign_id(self) -> str:
-        return str(uuid.uuid4())
-
-    # Cap a value to a maximum of 99
-    def cap_stat(self, value, max_value=99):
-        return min(value, max_value)
-
-    # Generate a random name for the player
+    # ---------- identity ----------
     def assign_name(self) -> str:
-        first_names = ['John', 'Michael', 'David', 'Chris', 'James', 'Robert', 'Daniel', 'William', 'Richard', 'Thomas']
-        last_names = ['Smith', 'Johnson', 'Brown', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris',
-                      'Martin']
-        return f"{random.choice(first_names)} {random.choice(last_names)}"
+        return f"{self.rng.choice(FIRST_NAMES)} {self.rng.choice(LAST_NAMES)}"
 
-    # Assign a unique shirt number to each player
     def assign_shirt_number(self, assigned_numbers: set = None) -> int:
-        # Picks a free number but does not reserve it: the team builder reserves the number
-        # only when the player is accepted (rejected candidates must not burn numbers).
-        available_numbers = set(range(1, 100)) - (assigned_numbers or set())
-        if not available_numbers:
+        # Picks a free number but does not reserve it: the squad builder reserves it on accept.
+        available = sorted(set(range(1, 100)) - (assigned_numbers or set()))
+        if not available:
             raise ValueError("No free shirt numbers left (1-99)")
-        return random.choice(sorted(available_numbers))
+        return self.rng.choice(available)
 
     def assign_age(self) -> int:
-        return random.randint(21, 30)
+        return self.rng.randint(21, 30)
 
-    def assign_height(self):
-        # Normal distribution centered at 178 cm; heights above 190 cm are kept only 10% of the time
-        while True:
-            height = random.gauss(178, 8)
-            if 160 <= height <= 200:
-                if height > 190 and random.random() >= 0.10:
-                    continue
-                return round(height)
+    def assign_side(self, side: Optional[str]) -> str:
+        if side is not None:
+            if side not in self.spec.sides:
+                raise ValueError(f"A {self.position} cannot play side '{side}' (allowed: {self.spec.sides})")
+            return side
+        return self.rng.choice(self.spec.sides)
 
-    def assign_preferred_foot(self):
-        # Assign dominant foot with updated probabilities
-        dominant_foot = random.choices(
-            ['Right', 'Left'],
-            weights=[75, 25],  # 75% Right-footed, 25% Left-footed
-            k=1
-        )[0]
-        # Weaker foot level
-        if random.random() < 0.1:  # 10% chance for ambidextrous
-            weaker_foot_level = 3
-        else:
-            weaker_foot_level = random.choices(
-                [1, 2],
-                weights=[70, 30],
-                k=1
-            )[0]
+    def assign_role(self, role: Optional[str]) -> str:
+        if role is not None:
+            if role not in self.spec.roles:
+                raise ValueError(f"Unknown role '{role}' for {self.position} (allowed: {self.spec.roles})")
+            return role
+        return self.rng.choice(self.spec.roles)
+
+    # ---------- body ----------
+    def assign_height(self) -> int:
+        mean, std_dev, low, high = self.spec.height
+        return round(self.truncated_gauss(mean, std_dev, low, high))
+
+    def assign_preferred_foot(self, dominant_foot: Optional[str] = None) -> Dict:
+        if dominant_foot is None:
+            dominant_foot = "Left" if self.rng.random() < self.spec.left_foot[self.side] else "Right"
+        elif dominant_foot not in ("Left", "Right"):
+            raise ValueError("dominant_foot must be 'Left' or 'Right'")
+        stars_weights = realism.WEAK_FOOT_STARS_WEIGHTS
+        stars = self.rng.choices(list(stars_weights), weights=list(stars_weights.values()), k=1)[0]
         return {
             'dominant_foot': dominant_foot,
-            'weak_foot_level': weaker_foot_level
+            'weak_foot_level': realism.legacy_weak_foot_level(stars),
+            'weak_foot_stars': stars,
         }
 
-    def assign_stamina(self):
-        base_stamina = random.gauss(70, 10)
-        base_stamina = max(50, min(90, base_stamina))
-        # Adjust for age
-        if self.age >= 29:
-            base_stamina -= 5
-        return round(base_stamina)
+    def assign_fitness(self) -> str:
+        return self.rng.choices(['Low', 'Moderate', 'Peak'], weights=[10, 80, 10], k=1)[0]
 
-    def assign_fitness(self):
-        fitness_level = random.choices(
-            ['Low', 'Moderate', 'Peak'],
-            weights=[10, 80, 10],
-            k=1
-        )[0]
-        return fitness_level
+    def assign_stamina(self) -> int:
+        stamina = self.truncated_gauss(70, 10, 50, 90)
+        if self.age > 30:
+            stamina -= 1.5 * (self.age - 30)
+        elif self.age < 19:
+            stamina -= 5
+        stamina += {'Low': -8, 'Moderate': 0, 'Peak': 5}[self.fitness]
+        return round(max(30, min(99, stamina)))
 
-    def assign_nationality(self) -> str:
-        countries = ['CountryA', 'CountryB', 'CountryC']  # Placeholder list
-        return random.choice(countries)
+    # ---------- stats ----------
+    def get_stat_config(self) -> Dict:
+        config = player_config['positions'][self.level][self.position]
+        if self.position == 'goalkeeper':
+            return {k: v for k, v in config.items() if k not in GOALKEEPER_EXCLUDED_CATEGORIES}
+        return config
 
-    def get_stat_config(self):
-        return player_config['positions'][self.level.lower()].get(self.position, {})
-
-    def generate_stat(self, mean, std_dev, min_value=1, max_value=99, max_attempts=50):
-        # Truncated normal via rejection; falls back to clamping so a bad config can never hang
+    def truncated_gauss(self, mean, std_dev, min_value=1, max_value=99, max_attempts=50) -> float:
+        # Rejection sampling with a clamp fallback, so a bad config can never hang
         for _ in range(max_attempts):
-            value = random.gauss(mean, std_dev)
+            value = self.rng.gauss(mean, std_dev)
             if min_value <= value <= max_value:
-                return round(value)
-        return round(max(min_value, min(max_value, mean)))
+                return value
+        return max(min_value, min(max_value, mean))
 
-    def generate_stats(self):
-        player_stats = {}
-        default_mean_by_level = {
-            'weaker': 35,
-            'normal': 50,
-            'excellent': 70
-        }
+    def generate_stat(self, mean, std_dev, min_value=1, max_value=99) -> int:
+        return round(self.truncated_gauss(mean, std_dev, min_value, max_value))
 
-        default_mean = default_mean_by_level.get(self.level, 50)
-        for category, stats in self.stat_config.items():
-            category_stats = {}
-            for stat_name, params in stats.items():
-                if 'range' in params:
-                    mean = random.randint(*params['range'])  # drawn per player, not per process
-                else:
-                    mean = params.get('mean', default_mean)
-                std_dev = params.get('std_dev', 4)
-                min_value = params.get('min', 1)
-                max_value = params.get('max', 99)
-                stat_value = self.generate_stat(mean, std_dev, min_value, max_value)
-                category_stats[stat_name] = self.cap_stat(stat_value, max_value=99)
-            player_stats[category] = category_stats
+    def generate_stats(self) -> Dict[str, Dict[str, int]]:
+        stats: Dict[str, Dict[str, float]] = {}
+        for category, stat_params in self.stat_config.items():
+            stats[category] = {}
+            for stat_name, params in stat_params.items():
+                mean = self.rng.randint(*params['range']) if 'range' in params else params['mean']
+                stats[category][stat_name] = self.generate_stat(
+                    mean, params.get('std_dev', 4), params.get('min', 1), params.get('max', 99))
+        stats['athletic']['heading'] = self.generate_stat(stats['athletic']['jumping'], 4)
 
-        self.apply_age_adjustments(player_stats)
-        self.apply_fitness_adjustments(player_stats)
-        self.apply_height_adjustments(player_stats)
-        self.apply_preferred_foot_adjustments(player_stats)
-        self.additional_calculations(player_stats)
+        self.apply_role(stats)
+        self.apply_age_curve(stats)
+        self.apply_fitness(stats)
+        self.apply_height(stats)
+        self.apply_weak_foot(stats)
+        self.apply_set_piece_correlation(stats)
 
-        for category in player_stats:
-            for stat_name in player_stats[category]:
-                player_stats[category][stat_name] = self.cap_stat(player_stats[category][stat_name], 99)
-        return player_stats
+        return {category: {name: int(max(1, min(99, round(value)))) for name, value in values.items()}
+                for category, values in stats.items()}
 
-    def apply_age_adjustments(self, player_stats):
-        if self.age <= 24:
-            multiplier = random.uniform(0.95, 0.98)
-        elif self.age >= 29:
-            multiplier = random.uniform(0.97, 0.99)
-        else:
-            multiplier = 1.0
+    def apply_role(self, stats):
+        for key, delta in realism.ROLE_MODIFIERS[self.position][self.role].items():
+            category, _, stat = key.partition('.')
+            if category not in stats:
+                continue
+            targets = [stat] if stat else list(stats[category])
+            for name in targets:
+                if name in stats[category]:
+                    stats[category][name] += delta
 
-        for category in player_stats:
-            for stat in player_stats[category]:
-                player_stats[category][stat] = self.cap_stat(round(player_stats[category][stat] * multiplier), 99)
+    def apply_age_curve(self, stats):
+        for category, values in stats.items():
+            for name in values:
+                values[name] *= realism.age_factor(category, name, self.age)
 
-    def apply_fitness_adjustments(self, player_stats):
-        if self.fitness == 'Low':
-            multiplier = 0.9
-        elif self.fitness == 'Peak':
-            multiplier = 1.05
-        else:
-            multiplier = 1.0
+    def apply_fitness(self, stats):
+        # Fitness is about the body: it changes athletic attributes only
+        multiplier = {'Low': 0.93, 'Moderate': 1.0, 'Peak': 1.04}[self.fitness]
+        for name in stats['athletic']:
+            stats['athletic'][name] *= multiplier
 
-        for category in player_stats:
-            for stat in player_stats[category]:
-                if stat != 'Stamina':
-                    player_stats[category][stat] = self.cap_stat(round(player_stats[category][stat] * multiplier), 99)
+    def apply_height(self, stats):
+        # Relative to the position's average height: taller = better in the air and stronger, a bit slower
+        athletic = stats['athletic']
+        adjustment = max(-4, min(4, round((self.height - self.spec.height[0]) / 3)))
+        athletic['jumping'] += adjustment
+        athletic['heading'] += adjustment
+        athletic['physical_power'] += adjustment
+        athletic['speed'] -= adjustment / 2
+        athletic['acceleration'] -= adjustment
+        if adjustment < 0 and not self.spec.defensive:
+            athletic['dribbling'] -= adjustment  # smaller players are more agile on the ball
 
-    def apply_height_adjustments(self, player_stats):
-        athletic_stats = player_stats['athletic']
+    def apply_weak_foot(self, stats):
+        bonus = {1: -3, 2: 0, 3: 0, 4: 3, 5: 5}[self.weak_foot_stars]
+        if 'attack' in stats:
+            stats['attack']['finishing'] += bonus
+            stats['attack']['long_shots'] += bonus
+        stats['athletic']['dribbling'] += bonus
 
-        if 'heading' not in athletic_stats:
-            athletic_stats['heading'] = self.generate_stat(athletic_stats['jumping'], 4)
+    def apply_set_piece_correlation(self, stats):
+        attack, playmaking, set_pieces = stats.get('attack', {}), stats.get('playmaking', {}), stats.get('set_pieces')
+        if not set_pieces or not attack:
+            return
+        threshold = realism.SET_PIECE_THRESHOLD[self.level]
+        if max(attack.get('finishing', 0), attack.get('off_the_ball', 0)) > threshold:
+            set_pieces['penalty'] += 5
+        if max(attack.get('long_shots', 0), playmaking.get('passing', 0)) > threshold:
+            set_pieces['free_kicks'] += 5
 
-        if self.height > 185:
-            increase_percentage = random.uniform(0.10, 0.12)
-            athletic_stats['jumping'] = self.cap_stat(round(athletic_stats['jumping'] * (1 + increase_percentage)))
-            athletic_stats['heading'] = self.cap_stat(round(athletic_stats['heading'] * (1 + increase_percentage)))
+    # ---------- summaries ----------
+    def calculate_averages(self) -> Dict[str, int]:
+        return {category: round(sum(values.values()) / len(values)) for category, values in self.stats.items()}
 
-            height_diff = self.height - 181
-            adjustment = int(height_diff / 3)
-            adjustment = self.cap_stat(max(-5, min(5, adjustment)), 99)
-            athletic_stats['physical_power'] += adjustment
+    def calculate_overall(self) -> int:
+        total = weight_sum = 0.0
+        for key, weight in realism.OVERALL_WEIGHTS[self.position].items():
+            category, _, stat = key.partition('.')
+            value = self.stats.get(category, {}).get(stat)
+            if value is not None:
+                total += value * weight
+                weight_sum += weight
+        return round(total / weight_sum)
 
-            athletic_stats['speed'] -= adjustment
-            athletic_stats['acceleration'] -= adjustment
-        else:
-            height_diff = self.height - 181
-            adjustment = int(height_diff / 3)
-            adjustment = self.cap_stat(max(-5, min(5, adjustment)), 99)
-            if adjustment != 0:
-                athletic_stats['jumping'] += adjustment
-                athletic_stats['heading'] += adjustment
-                athletic_stats['physical_power'] += adjustment
-                athletic_stats['speed'] -= adjustment
-                athletic_stats['acceleration'] -= adjustment
-            if adjustment < 0 and self.position not in ['defender', 'goalkeeper', 'fullback']:
-                athletic_stats['dribbling'] -= adjustment
+    def calculate_potential(self) -> Optional[int]:
+        # Only young players have meaningful growth ahead of them
+        if self.age > 23:
+            return None
+        growth = (27 - self.age) * self.rng.uniform(1.0, 3.0)
+        return int(min(99, round(self.overall + growth)))
 
-        for stat in athletic_stats:
-            athletic_stats[stat] = self.cap_stat(max(1, min(99, athletic_stats.get(stat, 50))), 99)
-
-    def apply_preferred_foot_adjustments(self, player_stats):
-        weak_foot_level = self.preferred_foot['weak_foot_level']
-        if weak_foot_level == 3:
-            if 'attack' in player_stats:
-                player_stats['attack']['finishing'] = self.cap_stat(player_stats['attack'].get('finishing', 0) + 5, 99)
-                player_stats['attack']['long_shots'] = self.cap_stat(player_stats['attack'].get('long_shots', 0) + 5,
-                                                                     99)
-            if 'athletic' in player_stats:
-                player_stats['athletic']['dribbling'] = self.cap_stat(player_stats['athletic'].get('dribbling', 0) + 5,
-                                                                      99)
-
-    def additional_calculations(self, player_stats):
-        LEVEL_CONFIG = {
-            'weaker': {
-                'default': 35,
-                'threshold': 55,
-                'jumping_adjustment': 50,
-                'heading_adjustment': 50,
-                'speed_adjustment': 50,
-                'dribbling_non_defender': 45,
-                'dribbling_defender': 40,
-                'physical_power_threshold': 50,
-                'physical_power_stat': 55,
-                'finishing_threshold': 55,
-                'set_pieces_increment': 5
-            },
-            'normal': {
-                'default': 50,
-                'threshold': 70,
-                'jumping_adjustment': 65,
-                'heading_adjustment': 65,
-                'speed_adjustment': 65,
-                'dribbling_non_defender': 60,
-                'dribbling_defender': 55,
-                'physical_power_threshold': 65,
-                'physical_power_stat': 70,
-                'finishing_threshold': 70,
-                'set_pieces_increment': 5
-            },
-            'excellent': {
-                'default': 70,
-                'threshold': 90,
-                'jumping_adjustment': 85,
-                'heading_adjustment': 85,
-                'speed_adjustment': 85,
-                'dribbling_non_defender': 80,
-                'dribbling_defender': 75,
-                'physical_power_threshold': 85,
-                'physical_power_stat': 90,
-                'finishing_threshold': 90,
-                'set_pieces_increment': 5
-            }
-        }
-        config = LEVEL_CONFIG.get(self.level.lower(), LEVEL_CONFIG['normal'])
-
-        athletic_stats = player_stats['athletic']
-
-        self._balance_athletic_stats(athletic_stats, config)
-        self._adjust_physical_power(athletic_stats, config)
-        self._correlate_set_pieces(player_stats, config)
-
-    def _balance_athletic_stats(self, athletic_stats, config):
-        speed_stats = [
-            athletic_stats.get('speed', config['default']),
-            athletic_stats.get('acceleration', config['default']),
-            athletic_stats.get('dribbling', config['default'])
-        ]
-        heading_stats = [
-            athletic_stats.get('jumping', config['default']),
-            athletic_stats.get('heading', config['default'])
-        ]
-
-        if all(stat < config['threshold'] for stat in speed_stats):
-            athletic_stats['jumping'] = self.cap_stat(max(athletic_stats['jumping'], config['jumping_adjustment']), 99)
-            athletic_stats['heading'] = self.cap_stat(max(athletic_stats['heading'], config['heading_adjustment']), 99)
-        elif all(stat < config['threshold'] for stat in heading_stats):
-            athletic_stats['speed'] = self.cap_stat(max(athletic_stats['speed'], config['speed_adjustment']), 99)
-            athletic_stats['acceleration'] = self.cap_stat(
-                max(athletic_stats['acceleration'], config['speed_adjustment']), 99)
-            if self.position not in ['defender', 'goalkeeper', 'fullback']:
-                athletic_stats['dribbling'] = self.cap_stat(
-                    max(athletic_stats['dribbling'], config['dribbling_non_defender']), 99)
-            else:
-                athletic_stats['dribbling'] = self.cap_stat(
-                    max(athletic_stats['dribbling'], config['dribbling_defender']), 99)
-
-    def _adjust_physical_power(self, athletic_stats, config):
-        if athletic_stats['jumping'] > config['physical_power_threshold']:
-            athletic_stats['physical_power'] = self.cap_stat(
-                max(athletic_stats['physical_power'], config['physical_power_threshold']), 99)
-
-        if athletic_stats['acceleration'] < config['physical_power_threshold'] or athletic_stats['speed'] < config[
-            'physical_power_threshold']:
-            athletic_stats['physical_power'] = self.cap_stat(self.generate_stat(config['physical_power_stat'], 4), 99)
-
-    def _correlate_set_pieces(self, player_stats, config):
-        attack_stats = player_stats.get('attack', {})
-        playmaking_stats = player_stats.get('playmaking', {})
-        set_pieces = player_stats.get('set_pieces', {})
-
-        if attack_stats and set_pieces:
-            if attack_stats.get('finishing', 0) > config['finishing_threshold'] or attack_stats.get('off_the_ball', 0) > \
-                    config['finishing_threshold']:
-                if 'penalty' in set_pieces:
-                    set_pieces['penalty'] = self.cap_stat(set_pieces['penalty'] + config['set_pieces_increment'], 99)
-
-            if attack_stats.get('long_shots', 0) > config['finishing_threshold'] or playmaking_stats.get('passing', 0) > \
-                    config['finishing_threshold']:
-                if 'free_kicks' in set_pieces:
-                    set_pieces['free_kicks'] = self.cap_stat(set_pieces['free_kicks'] + config['set_pieces_increment'],
-                                                             99)
-
-    def calculate_averages(self):
-        averages = {}
-        for category, stats in self.stats.items():
-            avg = sum(stats.values()) / len(stats)
-            averages[category] = round(avg)
-        return averages
-
-    def to_dict(self):
+    def to_dict(self) -> Dict:
         return {
+            'id': self.id,
             'name': self.name,
             'shirt_number': self.shirt_number,
             'position': self.position,
-            "level": self.level.capitalize(),
+            'level': self.level.capitalize(),
             'age': self.age,
             'height': self.height,
             'preferred_foot': self.preferred_foot,
@@ -334,5 +237,11 @@ class Player:
             'nationality': self.nationality,
             'stats': self.stats,
             'averages': self.averages,
-            'id': self.id
+            # v2 additions (v1 clients can ignore them)
+            'side': self.side,
+            'role': self.role,
+            'overall': self.overall,
+            'potential': self.potential,
+            'weak_foot_stars': self.weak_foot_stars,
+            'squad_role': self.squad_role,
         }
