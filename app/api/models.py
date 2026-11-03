@@ -1,6 +1,6 @@
 # app/api/models.py
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -19,6 +19,13 @@ class PlayerModel(BaseModel):
     nationality: str
     stats: Dict[str, Dict[str, int]]
     averages: Dict[str, int]
+    # Added in v2.0 (optional, so older clients are unaffected)
+    side: Optional[str] = None
+    role: Optional[str] = None
+    overall: Optional[int] = None
+    potential: Optional[int] = None
+    weak_foot_stars: Optional[int] = None
+    squad_role: Optional[str] = None
 
     model_config = ConfigDict(
         json_schema_extra={

@@ -1,14 +1,33 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import router
+from fastapi.responses import JSONResponse, RedirectResponse
+
+from app.api.endpoints import router as v1_router
+from app.api.v2 import router as v2_router
+
+DESCRIPTION = """
+Generates soccer squads and players with position-specific, age-aware stats.
+
+**Start here:** `GET /api/v2/options` lists every level, age profile, template, formation, position and role.
+
+- **Teams:** `GET /api/v2/team` for quick options, `POST /api/v2/team` for custom position counts and level mixes.
+- **Players:** `GET /api/v2/player` for one player, `POST /api/v2/players` for a batch.
+- **Reproducible:** every response returns a `seed`. Send it back with the same options to get the identical result.
+- **v1 routes** (`/api/team/...`) are unchanged for existing clients.
+"""
 
 app = FastAPI(
-    title="Soccer Simulator API",
-    description="An API to generate soccer teams and players.",
-    version="1.0.0",
+    title="Soccer Vision API",
+    description=DESCRIPTION,
+    version="2.0.0",
+    openapi_tags=[
+        {"name": "v2 · options", "description": "Every value the generator accepts"},
+        {"name": "v2 · teams", "description": "Generate full squads"},
+        {"name": "v2 · players", "description": "Generate individual players"},
+        {"name": "v1 (legacy)", "description": "Original endpoints, kept for existing clients"},
+    ],
 )
 
-# Define the allowed origins
 origins = [
     "https://soccervision.github.io",  # Frontend on GitHub Pages
     "https://dev-spirit.com",
@@ -16,17 +35,28 @@ origins = [
     "http://localhost:3000",
 ]
 
-# Add CORS middleware to the FastAPI app (not to the router)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Allows only specific origins
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Include the router for your API
-app.include_router(router, prefix="/api")
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError):
+    # Invalid option combinations (e.g. role not valid for the position) are client errors
+    return JSONResponse(status_code=422, content={"detail": str(exc)})
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
+
+
+app.include_router(v1_router, prefix="/api")
+app.include_router(v2_router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn
