@@ -12,12 +12,10 @@ def generate_normal_team():
 
     def generate_player(position_class, count, ensure_foot=None):
         for _ in range(count):
-            player = position_class(level='normal', assigned_numbers=assigned_numbers)
-            # Ensure at least one left-footed and one right-footed fullback
-            if ensure_foot:
-                while player.preferred_foot['dominant_foot'] != ensure_foot:
-                    player = position_class(level='normal', assigned_numbers=assigned_numbers)
-                ensure_foot = None  # Only ensure foot for one player
+            extra = {'dominant_foot': ensure_foot} if ensure_foot else {}
+            player = position_class(level='normal', assigned_numbers=assigned_numbers, **extra)
+            assigned_numbers.add(player.shirt_number)
+            ensure_foot = None  # Only ensure foot for one player
             team.append(player)
 
     # Generate players for each position

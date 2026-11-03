@@ -37,31 +37,24 @@ class Player:
 
     # Assign a unique shirt number to each player
     def assign_shirt_number(self, assigned_numbers: set = None) -> int:
-        if assigned_numbers is None:
-            assigned_numbers = set()
-        available_numbers = set(range(1, 100)) - assigned_numbers
-        while not available_numbers:
-            # If there are no available numbers, expand the range
-            max_number = max(assigned_numbers) + 1 if assigned_numbers else 100
-            available_numbers = set(range(1, max_number)) - assigned_numbers
-
-        shirt_number = random.choice(list(available_numbers))
-        assigned_numbers.add(shirt_number)
-        return shirt_number
+        # Picks a free number but does not reserve it: the team builder reserves the number
+        # only when the player is accepted (rejected candidates must not burn numbers).
+        available_numbers = set(range(1, 100)) - (assigned_numbers or set())
+        if not available_numbers:
+            raise ValueError("No free shirt numbers left (1-99)")
+        return random.choice(sorted(available_numbers))
 
     def assign_age(self) -> int:
         return random.randint(21, 30)
 
     def assign_height(self):
-        # Generate height with normal distribution centered at 183 cm
+        # Normal distribution centered at 178 cm; heights above 190 cm are kept only 10% of the time
         while True:
             height = random.gauss(178, 8)
             if 160 <= height <= 200:
-                if height < 160 or height > 190:
-                    if random.random() < 0.10:  # 10% chance
-                        return round(height)
-                else:
-                    return round(height)
+                if height > 190 and random.random() >= 0.10:
+                    continue
+                return round(height)
 
     def assign_preferred_foot(self):
         # Assign dominant foot with updated probabilities
@@ -107,11 +100,13 @@ class Player:
     def get_stat_config(self):
         return player_config['positions'][self.level.lower()].get(self.position, {})
 
-    def generate_stat(self, mean, std_dev, min_value=0, max_value=99):
-        while True:
+    def generate_stat(self, mean, std_dev, min_value=1, max_value=99, max_attempts=50):
+        # Truncated normal via rejection; falls back to clamping so a bad config can never hang
+        for _ in range(max_attempts):
             value = random.gauss(mean, std_dev)
             if min_value <= value <= max_value:
                 return round(value)
+        return round(max(min_value, min(max_value, mean)))
 
     def generate_stats(self):
         player_stats = {}
@@ -125,9 +120,12 @@ class Player:
         for category, stats in self.stat_config.items():
             category_stats = {}
             for stat_name, params in stats.items():
-                mean = params.get('mean', default_mean)
+                if 'range' in params:
+                    mean = random.randint(*params['range'])  # drawn per player, not per process
+                else:
+                    mean = params.get('mean', default_mean)
                 std_dev = params.get('std_dev', 4)
-                min_value = params.get('min', 0)
+                min_value = params.get('min', 1)
                 max_value = params.get('max', 99)
                 stat_value = self.generate_stat(mean, std_dev, min_value, max_value)
                 category_stats[stat_name] = self.cap_stat(stat_value, max_value=99)
@@ -259,7 +257,6 @@ class Player:
         config = LEVEL_CONFIG.get(self.level.lower(), LEVEL_CONFIG['normal'])
 
         athletic_stats = player_stats['athletic']
-        athletic_stats['heading'] = self.generate_stat(athletic_stats['jumping'], 4)
 
         self._balance_athletic_stats(athletic_stats, config)
         self._adjust_physical_power(athletic_stats, config)

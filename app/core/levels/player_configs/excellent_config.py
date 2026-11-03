@@ -1,10 +1,8 @@
-import random
-
 excellent_adjustments = {
     'mental': {
-        'aggression': {'mean': random.randint(10, 90), 'std_dev': 5},
-        'teamwork': {'mean': random.randint(10, 90), 'std_dev': 5},
-        'decisions': {'mean': random.randint(10, 90), 'std_dev': 5},
+        'aggression': {'range': (10, 90), 'std_dev': 5},
+        'teamwork': {'range': (10, 90), 'std_dev': 5},
+        'decisions': {'range': (10, 90), 'std_dev': 5},
         'composure': {'mean': 70, 'std_dev': 6},
     },
     'defense': {

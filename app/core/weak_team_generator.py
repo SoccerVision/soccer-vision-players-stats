@@ -12,32 +12,25 @@ POSITIONS = [Goalkeeper, Defender, Fullback, Striker, Winger, Midfielder]
 def generate_weak_team():
     team = []
     assigned_numbers = set()
-    young_players_count = 0
-    old_players_count = 0
 
     def generate_player(position_class, count, ensure_foot=None, age_range=None):
-        nonlocal young_players_count, old_players_count
         for _ in range(count):
+            extra = {'dominant_foot': ensure_foot} if ensure_foot else {}
             while True:
-                player = position_class(level='weaker', assigned_numbers=assigned_numbers)
-                # Ensure player age if age_range is specified
-                if age_range:
-                    if age_range == 'young' and 18 <= player.age <= 21:
-                        young_players_count += 1
+                player = position_class(level='weaker', assigned_numbers=assigned_numbers, **extra)
+                if age_range == 'young':
+                    if 18 <= player.age <= 21:
                         break
-                    elif age_range == 'old' and player.age >= 29:
-                        old_players_count += 1
+                elif age_range == 'old':
+                    if player.age >= 29:
                         break
                 elif player.level == 'excellent' and player.age <= 27:
                     continue  # Ensure excellent players are above age 27
                 else:
                     break
-
-            # Ensure at least one left-footed and one right-footed fullback
-            if ensure_foot:
-                while player.preferred_foot['dominant_foot'] != ensure_foot:
-                    player = position_class(level='weaker', assigned_numbers=assigned_numbers)
-                ensure_foot = None  # Only ensure foot for one player
+            # Reserve the shirt number only once the player is accepted
+            assigned_numbers.add(player.shirt_number)
+            ensure_foot = None  # Only ensure foot for one player
             team.append(player)
 
     # Generate players for each position

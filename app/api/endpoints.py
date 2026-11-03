@@ -16,7 +16,7 @@ router = APIRouter()
 
 @router.get("/team", response_model=List[PlayerModel], summary="Generate a team",
             description="Generates a soccer team and returns it as JSON.")
-async def get_team():
+def get_team():
     team = generate_team()
     team_data = [player.to_dict() for player in team]
     return team_data
@@ -24,7 +24,7 @@ async def get_team():
 
 @router.get("/team/weaker", response_model=List[PlayerModel], summary="Generate a weaker team",
             description="Generates a weaker soccer team and returns it as JSON.")
-async def get_team():
+def get_weaker_team():
     team = generate_weak_team()
     team_data = [player.to_dict() for player in team]
     return team_data
@@ -32,7 +32,7 @@ async def get_team():
 
 @router.get("/team/normal", response_model=List[PlayerModel], summary="Generate a normal team",
             description="Generates a normal soccer team and returns it as JSON.")
-async def get_team():
+def get_normal_team():
     team = generate_normal_team()
     team_data = [player.to_dict() for player in team]
     return team_data
@@ -40,7 +40,7 @@ async def get_team():
 
 @router.get("/team/excellent", response_model=List[PlayerModel], summary="Generate a excellent team",
             description="Generates a excellent soccer team and returns it as JSON.")
-async def get_team():
+def get_excellent_team():
     team = generate_excellent_team()
     team_data = [player.to_dict() for player in team]
     return team_data
@@ -48,7 +48,7 @@ async def get_team():
 
 @router.get("/team/younger", response_model=List[PlayerModel], summary="Generate a young team",
             description="Generates a young soccer team and returns it as JSON.")
-async def get_team():
+def get_young_team():
     team = generate_young_team()
     team_data = [player.to_dict() for player in team]
     return team_data

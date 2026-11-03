@@ -1,1 +1,1 @@
-web: gunicorn -k uvicorn.workers.UvicornWorker soccer_simulation.main:app --bind 0.0.0.0:$PORT
+web: gunicorn -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:$PORT

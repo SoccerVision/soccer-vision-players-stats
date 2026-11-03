@@ -15,6 +15,7 @@ def generate_young_team():
     def generate_player(position_class, count):
         for _ in range(count):
             player = position_class(level=get_player_level().lower(), assigned_numbers=assigned_numbers)
+            assigned_numbers.add(player.shirt_number)
             # Directly set player age to be within the young age range (16-19 years old)
             player.age = random.randint(16, 19)
             # Adjust stats for young player based on their level and age
