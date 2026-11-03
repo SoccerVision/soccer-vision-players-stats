@@ -1,146 +1,71 @@
+# Soccer Vision API
 
-# Soccer Simulation Backend
+FastAPI service that generates soccer squads and players with position-specific, age-aware stats.
 
-## Overview
+- **Live:** https://soccer-api.dev-spirit.com (Swagger UI at [`/docs`](https://soccer-api.dev-spirit.com/docs))
+- **Frontend:** https://soccervision.github.io
 
-This repository contains the backend logic for a soccer simulation game. The backend is built using Python with FastAPI and includes logic to generate soccer players, teams, and other relevant simulations. The game simulates various soccer-related scenarios by generating player statistics, handling team formations, and offering an API for external interaction.
+## Run locally
 
----
-
-## Features
-
-- **Team Generator**: Automatically generates a soccer team with different positions such as goalkeepers, defenders, midfielders, strikers, and wingers.
-- **Position-Specific Logic**: Each position in the team has specific stat configurations to reflect real-life soccer skills.
-- **Player Stats**: Each player is generated with unique stats such as Physical Power, Finishing, Tackling, and more.
-- **API Endpoints**: Provides endpoints to retrieve generated teams or individual player data.
-
----
-
-## Technologies
-
-- Python
-- FastAPI
-- Pydantic (for models)
-- Uvicorn (as ASGI server)
-
----
-
-## Installation
-
-### macOS
-
-1. Clone the repository:
-
-    ```bash
-    git clone https://github.com/SoccerSimulator/Soccer-Simulation-BE.git
-    cd Soccer-Simulation-BE
-    ```
-
-2. Install [Pipenv](https://pipenv.pypa.io/en/latest/) if you haven't already:
-
-    ```bash
-    brew install pipenv
-    ```
-
-3. Install dependencies:
-
-    ```bash
-    pipenv install
-    ```
-
-4. Create new venv
-    ```bash
-    python3 -m venv venv
-    ```
-
-5. Activate the environment:
-
-    ```bash
-    pipenv shell
-    ```
-
-### Ubuntu
-
-1. Clone the repository:
-
-    ```bash
-    git clone https://github.com/SoccerSimulator/Soccer-Simulation-BE.git
-    cd Soccer-Simulation-BE
-    ```
-
-2. Install [Pipenv](https://pipenv.pypa.io/en/latest/):
-
-    ```bash
-    sudo apt install pipenv
-    ```
-
-3. Install dependencies:
-
-    ```bash
-    pipenv install
-    ```
-
-4. Activate the environment:
-
-    ```bash
-    pipenv shell
-    ```
-
-### Windows
-
-1. Clone the repository:
-
-    ```bash
-    git clone https://github.com/SoccerSimulator/Soccer-Simulation-BE.git
-    cd Soccer-Simulation-BE
-    ```
-
-2. Install [Pipenv](https://pipenv.pypa.io/en/latest/):
-
-    ```bash
-    pip install pipenv
-    ```
-
-3. Install dependencies:
-
-    ```bash
-    pipenv install
-    ```
-
-4. Activate the environment:
-
-    ```bash
-    pipenv shell
-    ```
-
----
-
-## Running the Application
-
-To run the server, use the following command:
+Requires [uv](https://docs.astral.sh/uv/) and Python 3.12.
 
 ```bash
-uvicorn app.main:app --reload
+uv sync                                   # creates .venv with app + dev dependencies
+uv run uvicorn app.main:app --reload      # http://127.0.0.1:8000/docs
+uv run pytest                             # 106 tests
 ```
 
-The API will be available at `http://127.0.0.1:8000`.
+## API
 
----
+Every response from v2 includes a `seed`. Send the same seed and options again to get the identical result.
 
-## API Endpoints
+| Method | Path | What it does |
+|---|---|---|
+| GET | `/api/v2/options` | Lists every level, age profile, template, formation, position and role |
+| GET | `/api/v2/team` | Squad from query options: `level`, `age_profile`, `min_age`, `max_age`, `template`, `formation`, `nationality`, `seed` |
+| POST | `/api/v2/team` | Same, plus custom position counts and `level_weights` for mixed squads |
+| GET | `/api/v2/team/{seed}/player/{index}` | One player from a seeded squad |
+| GET | `/api/v2/player` | One player: `position`, `level`, `age`, `side`, `role`, `dominant_foot`, `seed` |
+| POST | `/api/v2/players` | Up to 60 players with the same filters |
 
-- **GET** `/team`: Generates a team and returns it as JSON.
-- **GET** `/team/player/{player_id}`: Returns information for a specific player by their ID.
+**Options at a glance**
 
----
+- Levels: `weaker`, `normal`, `excellent`, `mixed` (default odds 2% excellent / 10% weaker / 88% normal).
+- Templates: `uefa25` (25-man squad), `formation` (XI + backup XI + 3rd GK), `youth`, `legacy`, `legacy_core`.
+- Formations: `4-4-2`, `4-3-3`, `4-2-3-1`, `3-5-2`, `3-4-3`, `5-3-2`.
+- Age profiles: `realistic` (17-36, most around 26), `youth`, `young`, `prime`, `veteran`, `legacy`.
 
-## English - Hebrew positions translation
+### v1 (unchanged, used by the frontend)
+
+`GET /api/team`, `/api/team/weaker`, `/api/team/normal`, `/api/team/excellent`, `/api/team/younger`,
+`/api/team/player/{index}`. They now also include the v2 fields (`overall`, `role`, `side`, ...).
+
+## How players are generated
+
+1. Base stats come from the level + position config in `app/core/levels/`.
+2. Role modifiers (e.g. target man: +heading/strength, -pace) from `app/core/realism.py`.
+3. Age curves per attribute: pace peaks 24-27, strength 26-30, technique flat to ~31,
+   decisions/composure/positioning improve into the early 30s, goalkeepers peak ~29-33.
+4. Fitness changes athletic stats only; height is compared with the position's average height.
+5. `overall` is a position-weighted rating; `potential` is given to players aged 23 or less.
+
+## Deploy
+
+Hosted on Vercel (project `soccer-vision-api`); the entrypoint is set in `pyproject.toml`
+(`[tool.vercel] entrypoint = "app.main:app"`).
+
+```bash
+vercel deploy          # preview
+vercel deploy --prod   # production (soccer-api.dev-spirit.com)
+```
+
+## Positions (English / Hebrew)
 
 ```txt
-שוער -  goalkeeper
-בלם - defenders
-מגנים -  full backs
-קשרים -  Midfielder
-חלוצים - Striker
-וינגר - Wingers
+goalkeeper - שוער
+defender   - בלם
+fullback   - מגן
+midfielder - קשר
+striker    - חלוץ
+winger     - וינגר
 ```
