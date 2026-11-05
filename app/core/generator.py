@@ -91,6 +91,9 @@ def build_slots(template: str, formation: Optional[str], positions: Optional[Dic
             raise ValueError(f"Unknown positions: {sorted(unknown)}")
         if any(c < 0 for c in positions.values()):
             raise ValueError("Position counts must be >= 0")
+        total = sum(positions.values())
+        if total > MAX_SQUAD_SIZE:
+            raise ValueError(f"Squad too large ({total}); max is {MAX_SQUAD_SIZE}")
         return [slot for pos in realism.POSITIONS for slot in _alternate_sides(pos, positions.get(pos, 0))]
     if template == "formation" or formation:
         name = formation or "4-3-3"

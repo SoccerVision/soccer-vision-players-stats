@@ -1,12 +1,12 @@
 """Typed request/response models for the v2 API (they drive the Swagger UI)."""
 
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Annotated, Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.core import realism
-from app.core.generator import AGE_PROFILES, FORMATIONS, TEMPLATES
+from app.core.generator import AGE_PROFILES, FORMATIONS, MAX_SQUAD_SIZE, TEMPLATES
 
 
 def _enum(name: str, values) -> type:
@@ -123,10 +123,18 @@ class TeamRequest(BaseModel):
     max_age: Optional[int] = Field(None, ge=15, le=45)
     template: Template = Template("uefa25")
     formation: Optional[Formation] = Field(None, description="Builds starting XI + backup XI + 3rd GK (23)")
-    positions: Optional[Dict[Position, int]] = Field(
-        None, description="Custom squad, e.g. {\"goalkeeper\": 2, \"striker\": 4}. Overrides template/formation")
+    positions: Optional[Dict[Position, Annotated[int, Field(ge=0, le=MAX_SQUAD_SIZE)]]] = Field(
+        None, description="Custom squad, e.g. {\"goalkeeper\": 2, \"striker\": 4}. Overrides template/formation. At most 60 players")
     nationalities: Optional[List[str]] = Field(None, min_length=1, max_length=50)
     seed: Optional[int] = Field(None, ge=0, description="Same seed + same options = same squad")
+
+    @model_validator(mode="after")
+    def position_counts_fit_a_squad(self):
+        if self.positions is not None:
+            total = sum(self.positions.values())
+            if total > MAX_SQUAD_SIZE:
+                raise ValueError(f"Squad too large ({total}); max is {MAX_SQUAD_SIZE}")
+        return self
 
     model_config = ConfigDict(json_schema_extra={"examples": [
         {"level": "mixed", "level_weights": {"excellent": 3, "normal": 15, "weaker": 2},

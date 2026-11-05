@@ -1,10 +1,11 @@
+import random
 import statistics
 
 import pytest
 
 from app.core import realism
-from app.core.generator import (AGE_PROFILES, FORMATIONS, TEMPLATES, GenerationOptions, generate_players,
-                                generate_squad, squad_summary)
+from app.core.generator import (AGE_PROFILES, FORMATIONS, TEMPLATES, GenerationOptions, build_slots,
+                                generate_players, generate_squad, squad_summary)
 from app.core.levels.player_config import player_config
 
 
@@ -129,3 +130,12 @@ def test_potential_only_for_young_players():
 def test_invalid_options_raise_value_error(options, match):
     with pytest.raises(ValueError, match=match):
         generate_squad(GenerationOptions(**options))
+
+
+def test_oversized_counts_are_rejected_before_slots_are_built(monkeypatch):
+    def allocated(*_args, **_kwargs):
+        raise AssertionError("slots were built")
+
+    monkeypatch.setattr("app.core.generator._alternate_sides", allocated)
+    with pytest.raises(ValueError, match="too large"):
+        build_slots("uefa25", None, {"striker": 10**6}, random.Random(0))
