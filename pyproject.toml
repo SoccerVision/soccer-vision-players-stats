@@ -1,6 +1,6 @@
 [project]
 name = "soccer-vision-players-stats"
-version = "2.0.0"
+version = "2.0.1"
 description = "Soccer squad and player generator API"
 requires-python = "~=3.12.0"
 dependencies = [
