@@ -14,9 +14,11 @@ from app.core.player import Player
 MAX_SQUAD_SIZE = 60
 DEFAULT_MIXED_WEIGHTS: Dict[str, float] = {"excellent": 1, "weaker": 5, "normal": 44}  # v1 odds: 2% / 10% / 88%
 
-# name -> (min_age, max_age, mode). mode=None means uniform, otherwise triangular around mode.
+# name -> (min_age, max_age, mode). mode=None means uniform, REAL_AGES the real age spread (realism.AGE_HISTOGRAM),
+# otherwise triangular around mode.
+REAL_AGES = 0
 AGE_PROFILES: Dict[str, Tuple[int, int, Optional[int]]] = {
-    "realistic": (17, 36, 26),  # shape of a real professional squad
+    "realistic": (16, 40, REAL_AGES),  # the age spread of real first-team squads (FIFA 23 top divisions: 18% aged 21 or under, 6% 34+)
     "youth": (16, 19, None),
     "young": (18, 23, None),
     "prime": (24, 29, None),
@@ -170,6 +172,11 @@ def age_bounds(options: GenerationOptions, slot: Optional[Slot] = None, level: s
 
 
 def draw_age(rng: random.Random, low: int, high: int, mode: Optional[int]) -> int:
+    if mode == REAL_AGES:
+        ages = [a for a in realism.AGE_HISTOGRAM if low <= a <= high]
+        if ages:
+            return rng.choices(ages, weights=[realism.AGE_HISTOGRAM[a] for a in ages], k=1)[0]
+        return rng.randint(low, high)
     if mode is None or not low <= mode <= high or low == high:
         return rng.randint(low, high)
     return int(min(high, max(low, round(rng.triangular(low, high, mode)))))

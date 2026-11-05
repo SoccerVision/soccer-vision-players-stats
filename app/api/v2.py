@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.api import schemas as s
 from app.core import realism
-from app.core.generator import (AGE_PROFILES, FORMATIONS, TEMPLATES, GenerationOptions, Squad,
+from app.core.generator import (AGE_PROFILES, REAL_AGES, FORMATIONS, TEMPLATES, GenerationOptions, Squad,
                                 generate_players, generate_squad, squad_summary)
 
 router = APIRouter(prefix="/v2")
@@ -54,7 +54,8 @@ def _team_query(level: s.Level = Query(s.Level("normal"), description="`mixed` =
 def get_options():
     return {
         "levels": [lvl.value for lvl in s.Level],
-        "age_profiles": {name: (f"{lo}-{hi}" + (f", most around {mode}" if mode else ""))
+        "age_profiles": {name: (f"{lo}-{hi}" + (", the age spread of real first-team squads" if mode == REAL_AGES
+                                                 else f", most around {mode}" if mode else ""))
                          for name, (lo, hi, mode) in AGE_PROFILES.items()},
         "templates": TEMPLATES,
         "formations": {name: [f"{slot.position}{'/' + slot.side if slot.side else ''}"

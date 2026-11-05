@@ -2,7 +2,7 @@ excellent_adjustments = {
     'mental': {
         'aggression': {'range': (10, 90), 'std_dev': 5},
         'teamwork': {'range': (10, 90), 'std_dev': 5},
-        'decisions': {'range': (10, 90), 'std_dev': 5},
+        'decisions': {'mean': 72, 'std_dev': 7},  # (by level, as composure: reading the game is what makes a better player - DESIGN)
         'composure': {'mean': 70, 'std_dev': 6},
     },
     'defense': {

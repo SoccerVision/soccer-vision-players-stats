@@ -1,14 +1,17 @@
 """Real-football reference data used by the player model.
 
-Sources of the numbers are public averages for top-flight European football:
-- Heights: goalkeepers ~189 cm, centre-backs ~187 cm, wingers ~175 cm.
-- Footedness: ~22% of players are left-footed; wide players usually play on the side of
-  their strong foot, except "inverted" wingers who cut inside onto it.
-- Age: pace peaks around 24-27, strength around 26-30, technique stays flat until ~31,
-  game intelligence (decisions, positioning, composure) keeps improving into the early 30s,
-  goalkeepers peak around 29-33.
-Base stat configs (app/core/levels/...) describe a player in his prime; the factors below scale
-those by age.
+Every number says where it comes from. REAL = measured real-world data; GAME = EA's FIFA 23 ratings (designers'
+opinions, the only source for some things); DESIGN = our choice, no source.
+- Heights (REAL): CIES Football Observatory, Monthly Report 79 (Oct 2022): goalkeepers 190.0, centre-backs 187.4,
+  full-backs 179.3, midfielders 177.8-180.4 cm; wingers and strikers from FIFA 23 (heights are real facts): 176.7 / 183.3.
+- Footedness (REAL): StatsBomb, "Footedness: how important is it?" (M. Carter, 2024): left back 78%, left centre-back 56%,
+  left winger 16% left-footed; the other slots from FIFA 23 starters in the top divisions (preferred foot is a real fact).
+- Age spread (REAL): FIFA 23 first-team players of the top divisions (11,500; ages are real facts) - AGE_HISTOGRAM.
+- Age curves (MIXED): peer-reviewed studies put the sprint peak at about 25.7 and a decline from about 28; the shape by age
+  of pace, strength and stamina is FIFA 23's (survivorship bias at 32+: the real decline is at least as steep).
+- Weak foot, heading accuracy, aggression (GAME): FIFA 23 top-division players by level band and position.
+Base stat configs (app/core/levels/...) describe a player in his prime; the factors below scale those by age.
+The FIFA 23 figures were counted from Hugging Face jsulz/FIFA23, 'male_players (legacy).csv' (FIFA 23 rows, league_level 1).
 """
 
 from dataclasses import dataclass
@@ -29,19 +32,55 @@ class PositionSpec:
 
 
 POSITION_SPECS: Dict[str, PositionSpec] = {
-    "goalkeeper": PositionSpec((189, 4, 178, 201), ("C",), {"C": 0.20}, ("shot_stopper", "sweeper_keeper"), True),
-    "defender": PositionSpec((187, 4, 176, 200), ("L", "C", "R"), {"L": 0.40, "C": 0.15, "R": 0.05}, ("stopper", "ball_playing"), True),
-    "fullback": PositionSpec((179, 5, 166, 192), ("L", "R"), {"L": 0.80, "R": 0.05}, ("defensive", "wing_back"), True),
-    "midfielder": PositionSpec((179, 6, 163, 195), ("C",), {"C": 0.20},
+    # height: CIES / FIFA 23 (see above); left_foot: StatsBomb for LB, LCB, LW, FIFA 23 starters for the rest
+    "goalkeeper": PositionSpec((189, 4.7, 178, 201), ("C",), {"C": 0.13}, ("shot_stopper", "sweeper_keeper"), True),
+    "defender": PositionSpec((187, 4.7, 176, 200), ("L", "C", "R"), {"L": 0.50, "C": 0.11, "R": 0.05}, ("stopper", "ball_playing"), True),
+    "fullback": PositionSpec((179, 5, 166, 192), ("L", "R"), {"L": 0.85, "R": 0.02}, ("defensive", "wing_back"), True),
+    "midfielder": PositionSpec((179, 6, 163, 195), ("C",), {"C": 0.18},  # (by role: see LEFT_FOOT_BY_ROLE)
                                ("defensive_mid", "box_to_box", "playmaker", "attacking_mid"), False),
-    "winger": PositionSpec((175, 5, 162, 188), ("L", "R"), {"L": 0.35, "R": 0.35},  # many wingers are inverted
+    "winger": PositionSpec((177, 5.5, 162, 190), ("L", "R"), {"L": 0.20, "R": 0.38},  # most wingers play on the side of their weaker foot (inverted)
                            ("traditional", "inside_forward"), False),
-    "striker": PositionSpec((182, 6, 165, 198), ("C",), {"C": 0.20},
+    "striker": PositionSpec((183, 6, 165, 199), ("C",), {"C": 0.16},
                             ("poacher", "target_man", "complete_forward", "false_nine"), False),
 }
 
-# Weak foot on the common 1-5 star scale (5 = fully two-footed, very rare).
-WEAK_FOOT_STARS_WEIGHTS: Dict[int, float] = {1: 0.05, 2: 0.45, 3: 0.38, 4: 0.10, 5: 0.02}
+# P(left-footed) for the midfield roles (FIFA 23 starters: CDM 13%, CM 17-21%, CAM 24%)
+LEFT_FOOT_BY_ROLE: Dict[str, float] = {"defensive_mid": 0.13, "box_to_box": 0.18, "playmaker": 0.18, "attacking_mid": 0.24}
+
+# The age spread of a first-team squad (FIFA 23, 11,500 first-team players of the top divisions: mean 26.0, 18% aged 21 or
+# under, 24% 30+, 6% 34+), share by age.
+AGE_HISTOGRAM: Dict[int, float] = {
+    16: 0.0008, 17: 0.0063, 18: 0.0194, 19: 0.0387, 20: 0.0498, 21: 0.0656, 22: 0.0810, 23: 0.0709, 24: 0.0738,
+    25: 0.0786, 26: 0.0771, 27: 0.0662, 28: 0.0649, 29: 0.0623, 30: 0.0629, 31: 0.0467, 32: 0.0417, 33: 0.0317,
+    34: 0.0226, 35: 0.0154, 36: 0.0099, 37: 0.0063, 38: 0.0035, 39: 0.0022, 40: 0.0011,
+}
+
+# Heading accuracy is a skill, not a jump: by position and level (GAME: FIFA 23 averages, top divisions, overall <60 / 60-72 /
+# 78+). Height decides how high a player reaches - the match engine works that out from the height itself.
+HEADING_BY_LEVEL: Dict[str, Dict[str, int]] = {
+    "goalkeeper": {"weaker": 13, "normal": 14, "excellent": 15},
+    "defender": {"weaker": 54, "normal": 66, "excellent": 80},
+    "fullback": {"weaker": 44, "normal": 54, "excellent": 68},
+    "midfielder": {"weaker": 46, "normal": 53, "excellent": 62},
+    "winger": {"weaker": 41, "normal": 48, "excellent": 56},
+    "striker": {"weaker": 54, "normal": 64, "excellent": 77},
+}
+
+# Aggression is a trait of the position, not of the level (GAME: FIFA 23, players rated 60-72; the spread is kept wide).
+AGGRESSION_BY_POSITION: Dict[str, int] = {"goalkeeper": 26, "defender": 67, "fullback": 62, "midfielder": 62,
+                                          "winger": 49, "striker": 54}
+
+# Stamina by age (MIXED: FIFA 23 outfield players' stamina against ages 27-29) - a 17-year-old has about three quarters of it.
+STAMINA_BY_AGE: List[Tuple[int, float]] = [(17, .76), (18, .78), (19, .82), (20, .86), (21, .89), (22, .93), (23, .94), (24, .98),
+                                           (27, 1.0), (30, .99), (32, .98), (33, .96), (34, .95), (35, .91), (36, .85)]
+
+# Weak foot on the common 1-5 star scale (5 = fully two-footed, very rare), by level (GAME: FIFA 23 top divisions, overall
+# <60 / 60-72 / 78+; better players are more two-footed).
+WEAK_FOOT_STARS_WEIGHTS: Dict[str, Dict[int, float]] = {
+    "weaker": {1: 0.020, 2: 0.286, 3: 0.624, 4: 0.063, 5: 0.008},
+    "normal": {1: 0.009, 2: 0.218, 3: 0.630, 4: 0.130, 5: 0.013},
+    "excellent": {1: 0.006, 2: 0.133, 3: 0.478, 4: 0.333, 5: 0.050},
+}
 
 
 def legacy_weak_foot_level(stars: int) -> int:
@@ -90,8 +129,10 @@ ROLE_MODIFIERS: Dict[str, Dict[str, Dict[str, int]]] = {
 
 # Age curves: (age, factor) points, linearly interpolated, flat outside the range.
 AGE_CURVES: Dict[str, List[Tuple[int, float]]] = {
-    "pace": [(16, .86), (19, .94), (22, .99), (24, 1.0), (27, 1.0), (30, .95), (33, .88), (36, .80)],
-    "strength": [(16, .78), (19, .90), (23, .98), (26, 1.0), (30, 1.0), (33, .95), (36, .90)],
+    # pace and strength: FIFA 23 sprint speed by age against age 24, strength against 29 (MIXED, see above) - young players
+    # are faster and weaker than the old curves said; strength keeps growing to about 29
+    "pace": [(16, .93), (17, .94), (19, .96), (21, .98), (23, 1.0), (27, .99), (29, .97), (31, .93), (33, .87), (35, .82), (36, .75)],
+    "strength": [(16, .72), (17, .75), (19, .81), (21, .87), (23, .93), (25, .96), (27, .98), (29, 1.0), (33, 1.0), (36, .97)],
     "technical": [(16, .80), (19, .90), (23, .97), (26, 1.0), (31, 1.0), (34, .96), (37, .92)],
     "intelligence": [(16, .75), (19, .85), (23, .93), (27, .98), (29, 1.0), (33, 1.02), (36, 1.0)],
     "goalkeeping": [(16, .75), (19, .85), (23, .93), (27, .98), (29, 1.0), (34, 1.0), (37, .95), (40, .88)],
@@ -100,7 +141,7 @@ AGE_CURVES: Dict[str, List[Tuple[int, float]]] = {
 
 STAT_AGE_GROUP: Dict[str, str] = {
     "speed": "pace", "acceleration": "pace",
-    "physical_power": "strength", "jumping": "strength", "heading": "strength",
+    "physical_power": "strength", "jumping": "strength", "heading": "technical",  # (heading is a skill: accuracy)
     "ball_control": "technical", "dribbling": "technical", "passing": "technical", "crossing": "technical",
     "creative": "technical", "finishing": "technical", "long_shots": "technical", "tackling": "technical",
     "free_kicks": "technical", "penalty": "technical",

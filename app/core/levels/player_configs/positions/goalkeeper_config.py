@@ -19,7 +19,7 @@ goalkeeper_stats = {
             'handling': {'mean': 60, 'std_dev': 4},
             'kicking': {'mean': 45, 'std_dev': 4},
             'one_on_one': {'mean': 57, 'std_dev': 4},
-            'reflexes': {'mean': 42, 'std_dev': 4},
+            'reflexes': {'mean': 57, 'std_dev': 4},  # (was 42, well below his other skills; FIFA 23 keepers rated under 60: 57 - GAME)
         },
         'athletic': {
             **weaker_adjustments["athletic"],
