@@ -5,13 +5,14 @@ from fastapi import APIRouter
 from typing import List
 
 from app.api.models import PlayerModel
+from app.version import V1_TAG
 from app.core.team_generator import generate_team
 from app.core.weak_team_generator import generate_weak_team
 from app.core.normal_team_generator import generate_normal_team
 from app.core.excellent_team_generator import generate_excellent_team
 from app.core.younger_team_generator import generate_young_team
 
-router = APIRouter(tags=["v1 (legacy)"])
+router = APIRouter(tags=[V1_TAG])
 
 
 @router.get("/team", response_model=List[PlayerModel], summary="Generate a team",

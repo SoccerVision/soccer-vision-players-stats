@@ -8,12 +8,9 @@ from app.api import schemas as s
 from app.core import realism
 from app.core.generator import (AGE_PROFILES, REAL_AGES, FORMATIONS, TEMPLATES, GenerationOptions, Squad,
                                 generate_players, generate_squad, squad_summary)
+from app.version import OPTIONS_TAG as INFO_TAG, PLAYERS_TAG as PLAYER_TAG, TEAMS_TAG as TEAM_TAG
 
 router = APIRouter(prefix="/v2")
-
-TEAM_TAG = "v2 · teams"
-PLAYER_TAG = "v2 · players"
-INFO_TAG = "v2 · options"
 
 
 def _val(enum_value):

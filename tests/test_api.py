@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 
 from app.core.generator import AGE_PROFILES, FORMATIONS, TEMPLATES
 from app.main import app
+from app.version import OPTIONS_TAG, PLAYERS_TAG, TEAMS_TAG, V1_TAG, VERSION
 
 client = TestClient(app)
 
@@ -99,5 +100,11 @@ def test_v2_invalid_input_is_422(method, path, kwargs):
 def test_docs_and_openapi_are_served():
     assert client.get("/docs").status_code == 200
     schema = client.get("/openapi.json").json()
-    assert schema["info"]["version"] == "2.0.0"
+    assert schema["info"]["version"] == VERSION
     assert "/api/v2/team" in schema["paths"]
+    assert [tag["name"] for tag in schema["tags"]] == [OPTIONS_TAG, TEAMS_TAG, PLAYERS_TAG, V1_TAG]
+    for operations in schema["paths"].values():
+        for operation in operations.values():
+            if isinstance(operation, dict) and "tags" in operation:
+                assert operation["tags"]
+                assert all(tag.startswith(f"{VERSION} · ") for tag in operation["tags"])

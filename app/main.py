@@ -4,9 +4,12 @@ from fastapi.responses import JSONResponse, RedirectResponse
 
 from app.api.endpoints import router as v1_router
 from app.api.v2 import router as v2_router
+from app.version import OPTIONS_TAG, PLAYERS_TAG, TEAMS_TAG, V1_TAG, VERSION
 
-DESCRIPTION = """
+DESCRIPTION = f"""
 Generates soccer squads and players with position-specific, age-aware stats.
+
+**Code version {VERSION}.** The version badge and the tags below are this version, taken from `pyproject.toml`.
 
 **Start here:** `GET /api/v2/options` lists every level, age profile, template, formation, position and role.
 
@@ -19,12 +22,12 @@ Generates soccer squads and players with position-specific, age-aware stats.
 app = FastAPI(
     title="Soccer Vision API",
     description=DESCRIPTION,
-    version="2.0.0",
+    version=VERSION,
     openapi_tags=[
-        {"name": "v2 · options", "description": "Every value the generator accepts"},
-        {"name": "v2 · teams", "description": "Generate full squads"},
-        {"name": "v2 · players", "description": "Generate individual players"},
-        {"name": "v1 (legacy)", "description": "Original endpoints, kept for existing clients"},
+        {"name": OPTIONS_TAG, "description": f"Every value the generator accepts. Code version {VERSION}."},
+        {"name": TEAMS_TAG, "description": f"Generate full squads. Code version {VERSION}."},
+        {"name": PLAYERS_TAG, "description": f"Generate individual players. Code version {VERSION}."},
+        {"name": V1_TAG, "description": f"Original endpoints, kept for existing clients. Shipped in code version {VERSION}."},
     ],
 )
 
