@@ -8,12 +8,9 @@ from app.api import schemas as s
 from app.core import realism
 from app.core.generator import (AGE_PROFILES, REAL_AGES, FORMATIONS, TEMPLATES, GenerationOptions, Squad,
                                 generate_players, generate_squad, squad_summary)
+from app.version import OPTIONS_TAG as INFO_TAG, PLAYERS_TAG as PLAYER_TAG, TEAMS_TAG as TEAM_TAG
 
 router = APIRouter(prefix="/v2")
-
-TEAM_TAG = "v2 · teams"
-PLAYER_TAG = "v2 · players"
-INFO_TAG = "v2 · options"
 
 
 def _val(enum_value):
@@ -36,7 +33,7 @@ def _team_options(req: s.TeamRequest) -> GenerationOptions:
     )
 
 
-def _team_query(level: s.Level = Query(s.Level("normal"), description="`mixed` = v1 odds (2% excellent, 10% weaker)"),
+def _team_query(level: s.Level = Query(s.Level("normal"), description="`mixed` uses the default odds (2% excellent, 10% weaker)"),
                 age_profile: s.AgeProfile = Query(s.AgeProfile("realistic")),
                 min_age: Optional[int] = Query(None, ge=15, le=45),
                 max_age: Optional[int] = Query(None, ge=15, le=45),
@@ -81,7 +78,7 @@ def post_team(req: s.TeamRequest):
 @router.get("/team/{seed}/player/{index}", response_model=s.Player, tags=[TEAM_TAG],
             summary="One player from a seeded squad",
             description="Regenerates the squad for `seed` + the same query options and returns player `index` "
-                        "(0-based). Deterministic replacement for the v1 `/team/player/{id}`.")
+                        "(0-based).")
 def get_team_player(seed: int, index: int,
                     level: s.Level = Query(s.Level("normal")),
                     age_profile: s.AgeProfile = Query(s.AgeProfile("realistic")),

@@ -3,29 +3,9 @@ from fastapi.testclient import TestClient
 
 from app.core.generator import AGE_PROFILES, FORMATIONS, TEMPLATES
 from app.main import app
+from app.version import OPTIONS_TAG, PLAYERS_TAG, TEAMS_TAG, VERSION
 
 client = TestClient(app)
-
-V1_KEYS = {"id", "name", "shirt_number", "position", "level", "age", "height", "preferred_foot",
-           "stamina", "fitness", "nationality", "stats", "averages"}
-
-
-@pytest.mark.parametrize("path,size", [
-    ("/api/team", 22), ("/api/team/weaker", 22), ("/api/team/normal", 18),
-    ("/api/team/excellent", 22), ("/api/team/younger", 17),
-])
-def test_v1_routes_keep_their_shape(path, size):
-    response = client.get(path)
-    assert response.status_code == 200
-    players = response.json()
-    assert len(players) == size
-    assert V1_KEYS <= set(players[0])
-    assert {"dominant_foot", "weak_foot_level"} <= set(players[0]["preferred_foot"])
-
-
-def test_v1_player_by_index():
-    assert client.get("/api/team/player/0").status_code == 200
-    assert client.get("/api/team/player/99").status_code == 404
 
 
 def test_options_lists_everything():
@@ -99,5 +79,12 @@ def test_v2_invalid_input_is_422(method, path, kwargs):
 def test_docs_and_openapi_are_served():
     assert client.get("/docs").status_code == 200
     schema = client.get("/openapi.json").json()
-    assert schema["info"]["version"] == "2.0.0"
+    assert schema["info"]["version"] == VERSION
     assert "/api/v2/team" in schema["paths"]
+    assert "/api/team" not in schema["paths"]
+    assert [tag["name"] for tag in schema["tags"]] == [OPTIONS_TAG, TEAMS_TAG, PLAYERS_TAG]
+    for operations in schema["paths"].values():
+        for operation in operations.values():
+            if isinstance(operation, dict) and "tags" in operation:
+                assert operation["tags"]
+                assert all(tag in {OPTIONS_TAG, TEAMS_TAG, PLAYERS_TAG} for tag in operation["tags"])

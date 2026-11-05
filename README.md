@@ -12,7 +12,7 @@ Requires [uv](https://docs.astral.sh/uv/) and Python 3.12.
 ```bash
 uv sync                                   # creates .venv with app + dev dependencies
 uv run uvicorn app.main:app --reload      # http://127.0.0.1:8000/docs
-uv run pytest                             # 117 tests
+uv run pytest                             # 105 tests
 ```
 
 ## API
@@ -34,11 +34,6 @@ Every response from v2 includes a `seed`. Send the same seed and options again t
 - Templates: `uefa25` (25-man squad), `formation` (XI + backup XI + 3rd GK), `youth`, `legacy`, `legacy_core`.
 - Formations: `4-4-2`, `4-3-3`, `4-2-3-1`, `3-5-2`, `3-4-3`, `5-3-2`.
 - Age profiles: `realistic` (16-40, the age spread of real first-team squads: 18% aged 21 or under, 6% 34+), `youth`, `young`, `prime`, `veteran`, `legacy`.
-
-### v1 (unchanged, used by the frontend)
-
-`GET /api/team`, `/api/team/weaker`, `/api/team/normal`, `/api/team/excellent`, `/api/team/younger`,
-`/api/team/player/{index}`. They now also include the v2 fields (`overall`, `role`, `side`, ...).
 
 ## How players are generated
 
@@ -69,6 +64,8 @@ Hosted on Vercel (project `soccer-vision-api`); the entrypoint is set in `pyproj
 vercel deploy          # preview
 vercel deploy --prod   # production (soccer-api.dev-spirit.com)
 ```
+
+A push to `main` bumps the patch version in `pyproject.toml`. That version is the badge at the top of `/docs`.
 
 ## Positions (English / Hebrew)
 
