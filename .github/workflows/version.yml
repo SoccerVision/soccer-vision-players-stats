@@ -77,11 +77,12 @@ jobs:
         if: steps.bump.outputs.bumped == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_HEAD_REF: ${{ github.head_ref }}
         run: |
           git add pyproject.toml uv.lock
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
             commit -m "Bump version to ${{ steps.bump.outputs.version }}"
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin "HEAD:${PR_HEAD_REF}"
           # A push from this token does not start the tests workflow, so record
           # the run that just passed pytest as the required "tests" check.
           gh api "repos/${GITHUB_REPOSITORY}/check-runs" \
