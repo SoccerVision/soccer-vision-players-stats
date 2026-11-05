@@ -1,10 +1,8 @@
 from app.core.player import Player
-from app.core.levels.player_config import player_config
 
 
 class Striker(Player):
-    def __init__(self, level='normal', assigned_numbers: set = None, ):
-        super().__init__('striker', level=level, assigned_numbers=assigned_numbers)
+    """Kept for backwards compatibility; position data lives in app/core/realism.py."""
 
-    def get_stat_config(self):
-        return player_config['positions'][self.level].get('striker', {})
+    def __init__(self, level='normal', assigned_numbers: set = None, **kwargs):
+        super().__init__('striker', level=level, assigned_numbers=assigned_numbers, **kwargs)

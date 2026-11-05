@@ -1,10 +1,8 @@
-import random
-
 weaker_adjustments = {
     'mental': {
-        'aggression': {'mean': random.randint(10, 90), 'std_dev': 5},
-        'teamwork': {'mean': random.randint(10, 90), 'std_dev': 5},
-        'decisions': {'mean': random.randint(10, 90), 'std_dev': 5},
+        'aggression': {'range': (10, 90), 'std_dev': 5},
+        'teamwork': {'range': (10, 90), 'std_dev': 5},
+        'decisions': {'range': (10, 90), 'std_dev': 5},
         'composure': {'mean': 35, 'std_dev': 6},
     },
     'defense': {
@@ -31,7 +29,7 @@ weaker_adjustments = {
         'speed': {'mean': 45, 'std_dev': 8},
     },
     'set_pieces': {
-        'free_kicks': {'mean': 15, 'std_dev': 15, 'min': 30, 'max': 90},
+        'free_kicks': {'mean': 40, 'std_dev': 15, 'min': 30, 'max': 90},
         'penalty': {'mean': 45, 'std_dev': 15, 'min': 30, 'max': 90},
     },
 }

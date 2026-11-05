@@ -1,7 +1,9 @@
-# app/core/models.py
+# app/api/models.py
 
-from pydantic import BaseModel
-from typing import Dict, Any
+from typing import Any, Dict, Optional
+
+from pydantic import BaseModel, ConfigDict
+
 
 class PlayerModel(BaseModel):
     id: str
@@ -17,67 +19,52 @@ class PlayerModel(BaseModel):
     nationality: str
     stats: Dict[str, Dict[str, int]]
     averages: Dict[str, int]
+    # Added in v2.0 (optional, so older clients are unaffected)
+    side: Optional[str] = None
+    role: Optional[str] = None
+    overall: Optional[int] = None
+    potential: Optional[int] = None
+    weak_foot_stars: Optional[int] = None
+    squad_role: Optional[str] = None
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
-                "id": '688164b0-2ac5-4b8f-abd3-2c62459a356c',
+                "id": "688164b0-2ac5-4b8f-abd3-2c62459a356c",
                 "name": "John Smith",
                 "shirt_number": 10,
-                "level":"Weaker | Normal | Excellent",
-                "position": "Midfielder",
-                "age": 28,
-                "height": 180,
-                "preferred_foot": {
-                    "dominant_foot": "Right",
-                    "weak_foot_level": 2
-                },
-                "stamina": 85,
-                "fitness": "Peak",
+                "position": "midfielder",
+                "level": "Normal",
+                "age": 26,
+                "height": 179,
+                "preferred_foot": {"dominant_foot": "Right", "weak_foot_level": 2},
+                "stamina": 74,
+                "fitness": "Moderate",
                 "nationality": "CountryA",
                 "stats": {
-                    "Mental": {
-                        "Aggression": 75,
-                        "Composure": 80,
-                        "Decisions": 78,
-                        "Teamwork": 82
+                    "mental": {"aggression": 41, "teamwork": 68, "decisions": 55, "composure": 52},
+                    "defense": {"tackling": 49, "marking": 51, "positioning": 50},
+                    "attack": {"finishing": 50, "long_shots": 61, "off_the_ball": 56},
+                    "playmaking": {"creative": 70, "passing": 73, "crossing": 69},
+                    "athletic": {
+                        "physical_power": 58,
+                        "ball_control": 61,
+                        "dribbling": 60,
+                        "jumping": 57,
+                        "acceleration": 62,
+                        "speed": 60,
+                        "heading": 58,
                     },
-                    "Athletic": {
-                        "Acceleration": 85,
-                        "ball_control": 88,
-                        "Dribbling": 90,
-                        "Heading": 70,
-                        "Jumping": 75,
-                        "physical_power": 80,
-                        "Speed": 87
-                    },
-                    "Defense": {
-                        "Tackling": 65,
-                        "Marking": 70,
-                        "Positioning": 75
-                    },
-                    "Attack": {
-                        "Finishing": 60,
-                        "long_shots": 62,
-                        "off_the_ball": 68
-                    },
-                    "Playmaking": {
-                        "Creative": 72,
-                        "Passing": 80,
-                        "Crossing": 75
-                    },
-                    "Set Pieces": {
-                        "free_kicks": 55,
-                        "Penalty": 60
-                    }
+                    "set_pieces": {"free_kicks": 55, "penalty": 63},
                 },
                 "averages": {
-                    "Mental": 79,
-                    "Athletic": 83,
-                    "Defense": 70,
-                    "Attack": 63,
-                    "Playmaking": 76,
-                    "Set Pieces": 57
-                }
+                    "mental": 54,
+                    "defense": 50,
+                    "attack": 56,
+                    "playmaking": 71,
+                    "athletic": 59,
+                    "set_pieces": 59,
+                },
             }
         }
+    )
