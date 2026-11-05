@@ -16,9 +16,9 @@ def test_decisions_are_intelligence_loosely_tied_to_the_level():
     # a little better at a higher level, but good players with poor decisions and ordinary ones with fine decisions are common
     weak = [p.stats["mental"]["decisions"] for p in _players("weaker", "midfielder")]
     excellent = [p.stats["mental"]["decisions"] for p in _players("excellent", "midfielder")]
-    assert 8 < statistics.mean(excellent) - statistics.mean(weak) < 25
-    assert sum(v < 40 for v in excellent) / len(excellent) > 0.05   # excellent players who decide poorly
-    assert sum(v > 60 for v in weak) / len(weak) > 0.05             # weak players who decide well
+    assert 12 < statistics.mean(excellent) - statistics.mean(weak) < 30
+    assert sum(v < 55 for v in excellent) / len(excellent) > 0.08   # excellent players who decide worse than an ordinary one
+    assert sum(v > 70 for v in weak) / len(weak) > 0.08             # weak players who decide better than an excellent one on average
 
 
 def test_excellent_players_are_not_piled_up_at_99_but_some_reach_90():
