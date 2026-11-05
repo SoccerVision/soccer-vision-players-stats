@@ -12,12 +12,13 @@ def _players(level, position, n=600, age=26, seed=1):
     return [Player(position, level, rng=rng, age=age) for _ in range(n)]
 
 
-def test_decisions_follow_the_level():
-    # reading the game is part of being a better player: no excellent player decides like a weak one
+def test_decisions_are_intelligence_loosely_tied_to_the_level():
+    # a little better at a higher level, but good players with poor decisions and ordinary ones with fine decisions are common
     weak = [p.stats["mental"]["decisions"] for p in _players("weaker", "midfielder")]
     excellent = [p.stats["mental"]["decisions"] for p in _players("excellent", "midfielder")]
-    assert statistics.mean(excellent) > statistics.mean(weak) + 25
-    assert min(excellent) > 40
+    assert 8 < statistics.mean(excellent) - statistics.mean(weak) < 25
+    assert sum(v < 40 for v in excellent) / len(excellent) > 0.05   # excellent players who decide poorly
+    assert sum(v > 60 for v in weak) / len(weak) > 0.05             # weak players who decide well
 
 
 def test_excellent_players_are_not_piled_up_at_99_but_some_reach_90():
@@ -26,6 +27,12 @@ def test_excellent_players_are_not_piled_up_at_99_but_some_reach_90():
         values = [p.stats[category][stat] for p in _players("excellent", position)]
         assert sum(v == 99 for v in values) / len(values) < 0.02, f"{position} {stat} piled up at 99"
         assert 0.03 < sum(v >= 90 for v in values) / len(values) < 0.35, f"{position} {stat}: 90+ should be rare but there"
+
+
+def test_a_tall_winger_or_a_good_heading_winger_is_rare_but_possible():
+    wingers = _players("normal", "winger", n=3000)
+    assert 0 < sum(p.height >= 188 for p in wingers) / len(wingers) < 0.05
+    assert 0 < sum(p.stats["athletic"]["heading"] >= 65 for p in wingers) / len(wingers) < 0.10
 
 
 def test_heading_is_a_skill_not_a_jump():
@@ -85,13 +92,11 @@ def test_young_players_have_less_stamina():
     assert statistics.mean(young) < 0.85 * statistics.mean(prime)
 
 
-def test_aggression_follows_the_position():
-    centre_backs = statistics.mean(p.stats["mental"]["aggression"] for p in _players("normal", "defender"))
-    wingers = statistics.mean(p.stats["mental"]["aggression"] for p in _players("normal", "winger"))
-    assert centre_backs > wingers + 10
-    # and it is a trait, not a level: a weak centre-back is as hard as an excellent one
-    weak = statistics.mean(p.stats["mental"]["aggression"] for p in _players("weaker", "defender"))
-    assert abs(weak - centre_backs) < 4
+def test_aggression_is_character_random_for_every_position():
+    # a striker can be as aggressive as a centre-back: it is the player's character, 10-90 at random
+    for position in ("defender", "winger", "striker"):
+        values = [p.stats["mental"]["aggression"] for p in _players("normal", position)]
+        assert statistics.pstdev(values) > 18 and max(values) >= 85 and min(values) <= 15
 
 
 def test_weak_foot_gives_no_bonus_to_other_skills():

@@ -32,15 +32,16 @@ class PositionSpec:
 
 
 POSITION_SPECS: Dict[str, PositionSpec] = {
-    # height: CIES / FIFA 23 (see above); left_foot: StatsBomb for LB, LCB, LW, FIFA 23 starters for the rest
-    "goalkeeper": PositionSpec((189, 4.7, 178, 201), ("C",), {"C": 0.13}, ("shot_stopper", "sweeper_keeper"), True),
-    "defender": PositionSpec((187, 4.7, 176, 200), ("L", "C", "R"), {"L": 0.50, "C": 0.11, "R": 0.05}, ("stopper", "ball_playing"), True),
-    "fullback": PositionSpec((179, 5, 166, 192), ("L", "R"), {"L": 0.85, "R": 0.02}, ("defensive", "wing_back"), True),
-    "midfielder": PositionSpec((179, 6, 163, 195), ("C",), {"C": 0.18},  # (by role: see LEFT_FOOT_BY_ROLE)
+    # height: CIES / FIFA 23 (see above) - the bounds are wide on purpose: a tall winger or a small striker is rarer, not
+    # impossible (the spread decides how rare); left_foot: StatsBomb for LB, LCB, LW, FIFA 23 starters for the rest
+    "goalkeeper": PositionSpec((189, 4.7, 176, 205), ("C",), {"C": 0.13}, ("shot_stopper", "sweeper_keeper"), True),
+    "defender": PositionSpec((187, 4.7, 172, 204), ("L", "C", "R"), {"L": 0.50, "C": 0.11, "R": 0.05}, ("stopper", "ball_playing"), True),
+    "fullback": PositionSpec((179, 5, 162, 196), ("L", "R"), {"L": 0.85, "R": 0.02}, ("defensive", "wing_back"), True),
+    "midfielder": PositionSpec((179, 6, 158, 200), ("C",), {"C": 0.18},  # (by role: see LEFT_FOOT_BY_ROLE)
                                ("defensive_mid", "box_to_box", "playmaker", "attacking_mid"), False),
-    "winger": PositionSpec((177, 5.5, 162, 190), ("L", "R"), {"L": 0.20, "R": 0.38},  # most wingers play on the side of their weaker foot (inverted)
+    "winger": PositionSpec((177, 5.5, 156, 198), ("L", "R"), {"L": 0.20, "R": 0.38},  # most wingers play on the side of their weaker foot (inverted)
                            ("traditional", "inside_forward"), False),
-    "striker": PositionSpec((183, 6, 165, 199), ("C",), {"C": 0.16},
+    "striker": PositionSpec((183, 6, 160, 205), ("C",), {"C": 0.16},
                             ("poacher", "target_man", "complete_forward", "false_nine"), False),
 }
 
@@ -66,9 +67,7 @@ HEADING_BY_LEVEL: Dict[str, Dict[str, int]] = {
     "striker": {"weaker": 54, "normal": 64, "excellent": 77},
 }
 
-# Aggression is a trait of the position, not of the level (GAME: FIFA 23, players rated 60-72; the spread is kept wide).
-AGGRESSION_BY_POSITION: Dict[str, int] = {"goalkeeper": 26, "defender": 67, "fullback": 62, "midfielder": 62,
-                                          "winger": 49, "striker": 54}
+
 
 # Stamina by age (MIXED: FIFA 23 outfield players' stamina against ages 27-29) - a 17-year-old has about three quarters of it.
 STAMINA_BY_AGE: List[Tuple[int, float]] = [(17, .76), (18, .78), (19, .82), (20, .86), (21, .89), (22, .93), (23, .94), (24, .98),

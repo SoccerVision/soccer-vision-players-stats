@@ -139,9 +139,7 @@ class Player:
                 stats[category][stat_name] = self.generate_stat(
                     mean, params.get('std_dev', 4), params.get('min', 1), params.get('max', 99))
         # Heading is a skill (accuracy), not a jump: its own level by position (realism.HEADING_BY_LEVEL); jumping is athletic
-        stats['athletic']['heading'] = self.generate_stat(realism.HEADING_BY_LEVEL[self.position][self.level], 6)
-        # Aggression belongs to the position, not to the level (a centre-back is more aggressive than a winger)
-        stats['mental']['aggression'] = self.generate_stat(realism.AGGRESSION_BY_POSITION[self.position], 12, 10, 95)
+        stats['athletic']['heading'] = self.generate_stat(realism.HEADING_BY_LEVEL[self.position][self.level], 9)  # (wide: a winger who heads well is rarer, not impossible)
 
         self.apply_role(stats)
         self.apply_age_curve(stats)

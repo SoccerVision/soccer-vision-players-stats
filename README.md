@@ -12,7 +12,7 @@ Requires [uv](https://docs.astral.sh/uv/) and Python 3.12.
 ```bash
 uv sync                                   # creates .venv with app + dev dependencies
 uv run uvicorn app.main:app --reload      # http://127.0.0.1:8000/docs
-uv run pytest                             # 116 tests
+uv run pytest                             # 117 tests
 ```
 
 ## API
@@ -44,7 +44,8 @@ Every response from v2 includes a `seed`. Send the same seed and options again t
 
 1. Base stats come from the level + position config in `app/core/levels/`. The excellent level is pulled towards
    FIFA 23's 78+ players (about 83 in a position's key skill): 90+ is rare, as it is for the very best real players.
-   Decisions follow the level; aggression follows the position, not the level.
+   Decisions (intelligence) are a little better at a higher level but spread wide; aggression and teamwork are
+   character, at random for every position and level.
 2. Heading is a skill (accuracy) with its own level by position; jumping is athletic. Height changes neither.
 3. Role modifiers (e.g. target man: +heading/strength, -pace) from `app/core/realism.py`.
 4. Age curves per attribute: pace peaks about 23-27 and falls from about 29; strength grows to about 29; technique is
