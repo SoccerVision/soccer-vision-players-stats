@@ -2,6 +2,18 @@
 
 Each round of changes is developed on its own branch. Newest first.
 
+## `fix/decisions-baseline`
+
+**Decisions: 55 / 65 / 75 by level (was 42 / 50 / 58).** Still intelligence - loosely tied to the level, spread wide (sd 18, 5-97), so good players with
+poor decisions and ordinary ones with fine decisions stay common. Only the means move: the match engine this feeds was tuned on squads whose
+decisions were about 70 (the old generator drew them once per process, a bug fixed in #21), and at 42 / 50 / 58 an ordinary midfielder decides worse than
+the engine's calibration assumed (midfielders: 49 against 70). Same seeds give the same players with only decisions different (checked: no other stat of the
+normal Red squad changes; the ids are the same).
+
+| midfielders' decisions | before | after |
+|---|---|---|
+| weak / normal / excellent (mean) | 42.6 / 49.4 / 53.1 | 55.1 / 62.6 / 71.2 |
+
 ## `feat/player-model-realism`
 
 **The player model against real football.** Every number in `app/core/realism.py` now names its source: REAL (measured),

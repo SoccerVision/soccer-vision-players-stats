@@ -2,7 +2,7 @@ excellent_adjustments = {
     'mental': {
         'aggression': {'range': (10, 90), 'std_dev': 5},
         'teamwork': {'range': (10, 90), 'std_dev': 5},
-        'decisions': {'mean': 58, 'std_dev': 18, 'min': 5, 'max': 97},  # (intelligence: a little better at a higher level, but good players with poor decisions and ordinary ones with fine decisions are common - DESIGN)
+        'decisions': {'mean': 75, 'std_dev': 18, 'min': 5, 'max': 97},  # (intelligence: a little better at a higher level, but good players with poor decisions and ordinary ones with fine decisions are common - DESIGN)
         'composure': {'mean': 70, 'std_dev': 6},
     },
     'defense': {
