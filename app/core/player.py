@@ -90,10 +90,12 @@ class Player:
 
     def assign_preferred_foot(self, dominant_foot: Optional[str] = None) -> Dict:
         if dominant_foot is None:
-            dominant_foot = "Left" if self.rng.random() < self.spec.left_foot[self.side] else "Right"
+            p_left = realism.LEFT_FOOT_BY_ROLE.get(self.role, self.spec.left_foot[self.side]) \
+                if self.position == "midfielder" else self.spec.left_foot[self.side]
+            dominant_foot = "Left" if self.rng.random() < p_left else "Right"
         elif dominant_foot not in ("Left", "Right"):
             raise ValueError("dominant_foot must be 'Left' or 'Right'")
-        stars_weights = realism.WEAK_FOOT_STARS_WEIGHTS
+        stars_weights = realism.WEAK_FOOT_STARS_WEIGHTS[self.level]  # (better players are more two-footed)
         stars = self.rng.choices(list(stars_weights), weights=list(stars_weights.values()), k=1)[0]
         return {
             'dominant_foot': dominant_foot,
@@ -106,10 +108,7 @@ class Player:
 
     def assign_stamina(self) -> int:
         stamina = self.truncated_gauss(70, 10, 50, 90)
-        if self.age > 30:
-            stamina -= 1.5 * (self.age - 30)
-        elif self.age < 19:
-            stamina -= 5
+        stamina *= realism._interpolate(realism.STAMINA_BY_AGE, self.age)  # (young players build it, older ones lose it)
         stamina += {'Low': -8, 'Moderate': 0, 'Peak': 5}[self.fitness]
         return round(max(30, min(99, stamina)))
 
@@ -139,13 +138,13 @@ class Player:
                 mean = self.rng.randint(*params['range']) if 'range' in params else params['mean']
                 stats[category][stat_name] = self.generate_stat(
                     mean, params.get('std_dev', 4), params.get('min', 1), params.get('max', 99))
-        stats['athletic']['heading'] = self.generate_stat(stats['athletic']['jumping'], 4)
+        # Heading is a skill (accuracy), not a jump: its own level by position (realism.HEADING_BY_LEVEL); jumping is athletic
+        stats['athletic']['heading'] = self.generate_stat(realism.HEADING_BY_LEVEL[self.position][self.level], 9)  # (wide: a winger who heads well is rarer, not impossible)
 
         self.apply_role(stats)
         self.apply_age_curve(stats)
         self.apply_fitness(stats)
         self.apply_height(stats)
-        self.apply_weak_foot(stats)
         self.apply_set_piece_correlation(stats)
 
         return {category: {name: int(max(1, min(99, round(value)))) for name, value in values.items()}
@@ -173,23 +172,14 @@ class Player:
             stats['athletic'][name] *= multiplier
 
     def apply_height(self, stats):
-        # Relative to the position's average height: taller = better in the air and stronger, a bit slower
+        # Relative to the position's average height (MIXED: FIFA 23 players 12 cm apart in the same position - strength +12 to +19,
+        # acceleration -8 to -14, sprint speed 0 to -9; jumping, heading and dribbling about the same): a taller player is stronger
+        # and a little slower to get going. Jumping is athletic (it can be trained) and heading is a skill - height changes neither.
         athletic = stats['athletic']
-        adjustment = max(-4, min(4, round((self.height - self.spec.height[0]) / 3)))
-        athletic['jumping'] += adjustment
-        athletic['heading'] += adjustment
-        athletic['physical_power'] += adjustment
-        athletic['speed'] -= adjustment / 2
-        athletic['acceleration'] -= adjustment
-        if adjustment < 0 and not self.spec.defensive:
-            athletic['dribbling'] -= adjustment  # smaller players are more agile on the ball
-
-    def apply_weak_foot(self, stats):
-        bonus = {1: -3, 2: 0, 3: 0, 4: 3, 5: 5}[self.weak_foot_stars]
-        if 'attack' in stats:
-            stats['attack']['finishing'] += bonus
-            stats['attack']['long_shots'] += bonus
-        stats['athletic']['dribbling'] += bonus
+        cm = max(-12.0, min(12.0, self.height - self.spec.height[0]))
+        athletic['physical_power'] += 1.25 * cm
+        athletic['acceleration'] -= 0.9 * cm
+        athletic['speed'] -= 0.4 * cm
 
     def apply_set_piece_correlation(self, stats):
         attack, playmaking, set_pieces = stats.get('attack', {}), stats.get('playmaking', {}), stats.get('set_pieces')
