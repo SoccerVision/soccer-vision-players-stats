@@ -83,7 +83,7 @@ WEAK_FOOT_STARS_WEIGHTS: Dict[str, Dict[int, float]] = {
 
 
 def legacy_weak_foot_level(stars: int) -> int:
-    """Map 1-5 stars to the old 1-3 `weak_foot_level` field (kept for v1 clients)."""
+    """Map 1-5 stars onto the 1-3 `weak_foot_level` field."""
     return 1 if stars <= 2 else (2 if stars == 3 else 3)
 
 

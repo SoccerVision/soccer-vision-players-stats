@@ -3,14 +3,9 @@ import statistics
 import pytest
 
 from app.core import realism
-from app.core.excellent_team_generator import generate_excellent_team
 from app.core.generator import (AGE_PROFILES, FORMATIONS, TEMPLATES, GenerationOptions, generate_players,
                                 generate_squad, squad_summary)
 from app.core.levels.player_config import player_config
-from app.core.normal_team_generator import generate_normal_team
-from app.core.team_generator import generate_team
-from app.core.weak_team_generator import generate_weak_team
-from app.core.younger_team_generator import generate_young_team
 
 
 def assert_valid_squad(players):
@@ -21,26 +16,6 @@ def assert_valid_squad(players):
         for values in p.stats.values():
             assert all(1 <= v <= 99 for v in values.values())
         assert 1 <= p.overall <= 99
-
-
-@pytest.mark.parametrize("generator,size", [
-    (generate_team, 22), (generate_weak_team, 22), (generate_normal_team, 18),
-    (generate_excellent_team, 22), (generate_young_team, 17),
-])
-def test_v1_generators_never_hang_and_stay_valid(generator, size):
-    # The excellent team used to hang on ~35% of calls (shirt numbers ran out)
-    for _ in range(200):
-        team = generator()
-        assert len(team) == size
-        assert_valid_squad(team)
-
-
-def test_v1_excellent_rule_and_young_ages():
-    team = generate_excellent_team()
-    core, extras = team[:18], team[18:]
-    assert all(p.age >= 28 for p in core)
-    assert [18 <= p.age <= 21 for p in extras[:2]] == [True, True]
-    assert all(16 <= p.age <= 19 for p in generate_young_team())
 
 
 @pytest.mark.parametrize("template", sorted(TEMPLATES))

@@ -87,7 +87,7 @@ class Stats(BaseModel):
 
 class PreferredFoot(BaseModel):
     dominant_foot: str
-    weak_foot_level: int = Field(description="Legacy 1-3 scale (kept for v1 clients)")
+    weak_foot_level: int = Field(description="Weak foot on a 1-3 scale")
     weak_foot_stars: int = Field(description="1-5 stars, 5 = fully two-footed")
 
 

@@ -2,21 +2,17 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 
-from app.api.endpoints import router as v1_router
 from app.api.v2 import router as v2_router
-from app.version import OPTIONS_TAG, PLAYERS_TAG, TEAMS_TAG, V1_TAG, VERSION
+from app.version import OPTIONS_TAG, PLAYERS_TAG, TEAMS_TAG, VERSION
 
-DESCRIPTION = f"""
+DESCRIPTION = """
 Generates soccer squads and players with position-specific, age-aware stats.
-
-**Code version {VERSION}.** The version badge and the tags below are this version, taken from `pyproject.toml`.
 
 **Start here:** `GET /api/v2/options` lists every level, age profile, template, formation, position and role.
 
 - **Teams:** `GET /api/v2/team` for quick options, `POST /api/v2/team` for custom position counts and level mixes.
 - **Players:** `GET /api/v2/player` for one player, `POST /api/v2/players` for a batch.
 - **Reproducible:** every response returns a `seed`. Send it back with the same options to get the identical result.
-- **v1 routes** (`/api/team/...`) are unchanged for existing clients.
 """
 
 app = FastAPI(
@@ -24,10 +20,9 @@ app = FastAPI(
     description=DESCRIPTION,
     version=VERSION,
     openapi_tags=[
-        {"name": OPTIONS_TAG, "description": f"Every value the generator accepts. Code version {VERSION}."},
-        {"name": TEAMS_TAG, "description": f"Generate full squads. Code version {VERSION}."},
-        {"name": PLAYERS_TAG, "description": f"Generate individual players. Code version {VERSION}."},
-        {"name": V1_TAG, "description": f"Original endpoints, kept for existing clients. Shipped in code version {VERSION}."},
+        {"name": OPTIONS_TAG, "description": "Every value the generator accepts"},
+        {"name": TEAMS_TAG, "description": "Generate full squads"},
+        {"name": PLAYERS_TAG, "description": "Generate individual players"},
     ],
 )
 
@@ -58,7 +53,6 @@ def root():
     return RedirectResponse(url="/docs")
 
 
-app.include_router(v1_router, prefix="/api")
 app.include_router(v2_router, prefix="/api")
 
 if __name__ == "__main__":

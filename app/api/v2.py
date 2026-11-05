@@ -33,7 +33,7 @@ def _team_options(req: s.TeamRequest) -> GenerationOptions:
     )
 
 
-def _team_query(level: s.Level = Query(s.Level("normal"), description="`mixed` = v1 odds (2% excellent, 10% weaker)"),
+def _team_query(level: s.Level = Query(s.Level("normal"), description="`mixed` uses the default odds (2% excellent, 10% weaker)"),
                 age_profile: s.AgeProfile = Query(s.AgeProfile("realistic")),
                 min_age: Optional[int] = Query(None, ge=15, le=45),
                 max_age: Optional[int] = Query(None, ge=15, le=45),
@@ -78,7 +78,7 @@ def post_team(req: s.TeamRequest):
 @router.get("/team/{seed}/player/{index}", response_model=s.Player, tags=[TEAM_TAG],
             summary="One player from a seeded squad",
             description="Regenerates the squad for `seed` + the same query options and returns player `index` "
-                        "(0-based). Deterministic replacement for the v1 `/team/player/{id}`.")
+                        "(0-based).")
 def get_team_player(seed: int, index: int,
                     level: s.Level = Query(s.Level("normal")),
                     age_profile: s.AgeProfile = Query(s.AgeProfile("realistic")),

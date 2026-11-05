@@ -1,4 +1,4 @@
-"""Single source for the version shown in the API and its docs."""
+"""Single source for the version shown at the top of the API docs."""
 
 import tomllib
 from pathlib import Path
@@ -13,13 +13,6 @@ def code_version() -> str:
 
 VERSION = code_version()
 
-
-def doc_tag(name: str) -> str:
-    """Swagger tag labeled with the version of this code."""
-    return f"{VERSION} · {name}"
-
-
-OPTIONS_TAG = doc_tag("options")
-TEAMS_TAG = doc_tag("teams")
-PLAYERS_TAG = doc_tag("players")
-V1_TAG = doc_tag("v1 (legacy)")
+OPTIONS_TAG = "options"
+TEAMS_TAG = "teams"
+PLAYERS_TAG = "players"

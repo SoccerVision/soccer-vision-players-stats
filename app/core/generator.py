@@ -127,7 +127,6 @@ class GenerationOptions:
     positions: Optional[Dict[str, int]] = None  # custom counts, overrides template/formation
     nationalities: Optional[List[str]] = None
     seed: Optional[int] = None
-    legacy_excellent_min_age: bool = False  # v1 rule: excellent players are 28+
 
 
 @dataclass
@@ -152,7 +151,7 @@ def pick_level(rng: random.Random, options: GenerationOptions) -> str:
     return rng.choices(list(weights), weights=list(weights.values()), k=1)[0]
 
 
-def age_bounds(options: GenerationOptions, slot: Optional[Slot] = None, level: str = "normal"):
+def age_bounds(options: GenerationOptions, slot: Optional[Slot] = None):
     if options.age_profile not in AGE_PROFILES:
         raise ValueError(f"Unknown age_profile '{options.age_profile}' (allowed: {sorted(AGE_PROFILES)})")
     low, high, mode = AGE_PROFILES[options.age_profile]
@@ -163,9 +162,6 @@ def age_bounds(options: GenerationOptions, slot: Optional[Slot] = None, level: s
             low = options.min_age
         if options.max_age is not None:
             high = options.max_age
-        if options.legacy_excellent_min_age and level == "excellent":
-            low = max(low, 28)
-            high = max(high, low)
     if not 15 <= low <= high <= 45:
         raise ValueError(f"Invalid age range {low}-{high} (allowed 15-45, min <= max)")
     return low, high, mode
@@ -195,7 +191,7 @@ def pick_shirt_number(rng: random.Random, slot: Slot, taken: set) -> int:
 
 def make_player(rng: random.Random, options: GenerationOptions, slot: Slot, taken: set) -> Player:
     level = pick_level(rng, options)
-    age = draw_age(rng, *age_bounds(options, slot, level))
+    age = draw_age(rng, *age_bounds(options, slot))
     number = pick_shirt_number(rng, slot, taken)
     taken.add(number)
     return Player(slot.position, level, rng=rng, age=age, side=slot.side, role=slot.role,
