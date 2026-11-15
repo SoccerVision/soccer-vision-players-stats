@@ -6,6 +6,7 @@ from typing import Annotated, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.core import realism
+from app.core.errors import GeneratorError
 from app.core.generator import AGE_PROFILES, FORMATIONS, MAX_SQUAD_SIZE, TEMPLATES
 
 
@@ -133,7 +134,7 @@ class TeamRequest(BaseModel):
         if self.positions is not None:
             total = sum(self.positions.values())
             if total > MAX_SQUAD_SIZE:
-                raise ValueError(f"Squad too large ({total}); max is {MAX_SQUAD_SIZE}")
+                raise GeneratorError(f"Squad too large ({total}); max is {MAX_SQUAD_SIZE}")
         return self
 
     model_config = ConfigDict(json_schema_extra={"examples": [

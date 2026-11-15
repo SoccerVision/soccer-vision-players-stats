@@ -8,6 +8,8 @@ import random
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
+from app.core.errors import GeneratorError
+
 from app.core import realism
 from app.core.player import Player
 
@@ -88,17 +90,17 @@ def build_slots(template: str, formation: Optional[str], positions: Optional[Dic
     if positions:
         unknown = set(positions) - set(realism.POSITIONS)
         if unknown:
-            raise ValueError(f"Unknown positions: {sorted(unknown)}")
+            raise GeneratorError(f"Unknown positions: {sorted(unknown)}")
         if any(c < 0 for c in positions.values()):
-            raise ValueError("Position counts must be >= 0")
+            raise GeneratorError("Position counts must be >= 0")
         total = sum(positions.values())
         if total > MAX_SQUAD_SIZE:
-            raise ValueError(f"Squad too large ({total}); max is {MAX_SQUAD_SIZE}")
+            raise GeneratorError(f"Squad too large ({total}); max is {MAX_SQUAD_SIZE}")
         return [slot for pos in realism.POSITIONS for slot in _alternate_sides(pos, positions.get(pos, 0))]
     if template == "formation" or formation:
         name = formation or "4-3-3"
         if name not in FORMATIONS:
-            raise ValueError(f"Unknown formation '{name}' (allowed: {sorted(FORMATIONS)})")
+            raise GeneratorError(f"Unknown formation '{name}' (allowed: {sorted(FORMATIONS)})")
         xi = FORMATIONS[name]
         starters = [Slot(s.position, s.side, s.role, squad_role="starter") for s in xi]
         bench = [Slot(s.position, s.side, s.role, squad_role="bench") for s in xi]
@@ -115,7 +117,7 @@ def build_slots(template: str, formation: Optional[str], positions: Optional[Dic
     if template == "uefa25":
         return ([Slot(GK)] * 3 + _alternate_sides(CB, 4) + _alternate_sides(FB, 4) + [Slot(MF)] * 7
                 + _alternate_sides(W, 4) + [Slot(ST)] * 3)
-    raise ValueError(f"Unknown template '{template}' (allowed: {sorted(TEMPLATES)})")
+    raise GeneratorError(f"Unknown template '{template}' (allowed: {sorted(TEMPLATES)})")
 
 
 @dataclass
@@ -146,17 +148,17 @@ def new_seed() -> int:
 def pick_level(rng: random.Random, options: GenerationOptions) -> str:
     if options.level != "mixed":
         if options.level not in realism.LEVELS:
-            raise ValueError(f"Unknown level '{options.level}'")
+            raise GeneratorError(f"Unknown level '{options.level}'")
         return options.level
     weights = options.level_weights or DEFAULT_MIXED_WEIGHTS
     if set(weights) - set(realism.LEVELS) or sum(weights.values()) <= 0 or min(weights.values()) < 0:
-        raise ValueError("level_weights must use weaker/normal/excellent with non-negative weights")
+        raise GeneratorError("level_weights must use weaker/normal/excellent with non-negative weights")
     return rng.choices(list(weights), weights=list(weights.values()), k=1)[0]
 
 
 def age_bounds(options: GenerationOptions, slot: Optional[Slot] = None):
     if options.age_profile not in AGE_PROFILES:
-        raise ValueError(f"Unknown age_profile '{options.age_profile}' (allowed: {sorted(AGE_PROFILES)})")
+        raise GeneratorError(f"Unknown age_profile '{options.age_profile}' (allowed: {sorted(AGE_PROFILES)})")
     low, high, mode = AGE_PROFILES[options.age_profile]
     if slot is not None and slot.age_range:
         low, high, mode = slot.age_range[0], slot.age_range[1], None
@@ -166,7 +168,7 @@ def age_bounds(options: GenerationOptions, slot: Optional[Slot] = None):
         if options.max_age is not None:
             high = options.max_age
     if not 15 <= low <= high <= 45:
-        raise ValueError(f"Invalid age range {low}-{high} (allowed 15-45, min <= max)")
+        raise GeneratorError(f"Invalid age range {low}-{high} (allowed 15-45, min <= max)")
     return low, high, mode
 
 
@@ -188,7 +190,7 @@ def pick_shirt_number(rng: random.Random, slot: Slot, taken: set) -> int:
                 return number
     free = sorted(set(range(2, 100)) - taken) or sorted(set(range(1, 100)) - taken)
     if not free:
-        raise ValueError("No free shirt numbers left (1-99)")
+        raise GeneratorError("No free shirt numbers left (1-99)")
     return rng.choice(free)
 
 
@@ -207,9 +209,9 @@ def generate_squad(options: GenerationOptions) -> Squad:
     rng = random.Random(seed)
     slots = build_slots(options.template, options.formation, options.positions, rng)
     if not slots:
-        raise ValueError("Squad is empty: ask for at least one player")
+        raise GeneratorError("Squad is empty: ask for at least one player")
     if len(slots) > MAX_SQUAD_SIZE:
-        raise ValueError(f"Squad too large ({len(slots)}); max is {MAX_SQUAD_SIZE}")
+        raise GeneratorError(f"Squad too large ({len(slots)}); max is {MAX_SQUAD_SIZE}")
     taken: set = set()
     players = [make_player(rng, options, slot, taken) for slot in slots]
     return Squad(seed=seed, options=options, players=players)
@@ -220,7 +222,7 @@ def generate_players(options: GenerationOptions, count: int, position: Optional[
                      dominant_foot: Optional[str] = None, age: Optional[int] = None) -> Squad:
     """Free agents: `count` players with the same filters (random position when none given)."""
     if not 1 <= count <= MAX_SQUAD_SIZE:
-        raise ValueError(f"count must be 1-{MAX_SQUAD_SIZE}")
+        raise GeneratorError(f"count must be 1-{MAX_SQUAD_SIZE}")
     seed = options.seed if options.seed is not None else new_seed()
     rng = random.Random(seed)
     taken: set = set()

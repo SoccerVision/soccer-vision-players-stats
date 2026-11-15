@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
 
+env:
+  SQUAD_API_SHARED_SECRET: ci-test-secret-0123456789abcdef0123456789
+
 jobs:
   tests:
     name: tests
@@ -16,3 +19,4 @@ jobs:
           python-version: "3.12"
       - run: uv sync --frozen --group dev
       - run: uv run pytest
+      - run: uv run pip-audit

@@ -2,6 +2,7 @@ import random
 import uuid
 from typing import Dict, Optional
 
+from app.core.errors import GeneratorError
 from app.core.levels.player_config import player_config
 from app.core import realism
 
@@ -28,10 +29,10 @@ class Player:
                  shirt_number: Optional[int] = None, squad_role: Optional[str] = None,
                  nationalities=None):
         if position not in realism.POSITION_SPECS:
-            raise ValueError(f"Unknown position '{position}'")
+            raise GeneratorError(f"Unknown position '{position}'")
         level = level.lower()
         if level not in realism.LEVELS:
-            raise ValueError(f"Unknown level '{level}'")
+            raise GeneratorError(f"Unknown level '{level}'")
         self.rng = rng or random.Random()
         self.position = position
         self.level = level
@@ -63,7 +64,7 @@ class Player:
         # Picks a free number but does not reserve it: the squad builder reserves it on accept.
         available = sorted(set(range(1, 100)) - (assigned_numbers or set()))
         if not available:
-            raise ValueError("No free shirt numbers left (1-99)")
+            raise GeneratorError("No free shirt numbers left (1-99)")
         return self.rng.choice(available)
 
     def assign_age(self) -> int:
@@ -72,14 +73,14 @@ class Player:
     def assign_side(self, side: Optional[str]) -> str:
         if side is not None:
             if side not in self.spec.sides:
-                raise ValueError(f"A {self.position} cannot play side '{side}' (allowed: {self.spec.sides})")
+                raise GeneratorError(f"A {self.position} cannot play side '{side}' (allowed: {self.spec.sides})")
             return side
         return self.rng.choice(self.spec.sides)
 
     def assign_role(self, role: Optional[str]) -> str:
         if role is not None:
             if role not in self.spec.roles:
-                raise ValueError(f"Unknown role '{role}' for {self.position} (allowed: {self.spec.roles})")
+                raise GeneratorError(f"Unknown role '{role}' for {self.position} (allowed: {self.spec.roles})")
             return role
         return self.rng.choice(self.spec.roles)
 
@@ -94,7 +95,7 @@ class Player:
                 if self.position == "midfielder" else self.spec.left_foot[self.side]
             dominant_foot = "Left" if self.rng.random() < p_left else "Right"
         elif dominant_foot not in ("Left", "Right"):
-            raise ValueError("dominant_foot must be 'Left' or 'Right'")
+            raise GeneratorError("dominant_foot must be 'Left' or 'Right'")
         stars_weights = realism.WEAK_FOOT_STARS_WEIGHTS[self.level]  # (better players are more two-footed)
         stars = self.rng.choices(list(stars_weights), weights=list(stars_weights.values()), k=1)[0]
         return {

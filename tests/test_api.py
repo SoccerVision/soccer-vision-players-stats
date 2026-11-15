@@ -1,11 +1,18 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from app.config import settings
 from app.core.generator import AGE_PROFILES, FORMATIONS, TEMPLATES
 from app.main import app
 from app.version import OPTIONS_TAG, PLAYERS_TAG, TEAMS_TAG, VERSION
 
-client = TestClient(app)
+client = TestClient(app, headers={"x-api-key": settings.squad_api_shared_secret})
+
+
+def test_v2_requires_api_key():
+    unauthenticated = TestClient(app)
+    assert unauthenticated.get("/api/v2/options").status_code == 401
+    assert unauthenticated.get("/api/v2/options", headers={"x-api-key": "wrong"}).status_code == 401
 
 
 def test_options_lists_everything():

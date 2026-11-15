@@ -1,8 +1,10 @@
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
+from app.api.auth import require_api_key
+from app.api.rate_limit import rate_limit
 from app.api.v2 import router as v2_router
+from app.core.errors import GeneratorError
 from app.version import OPTIONS_TAG, PLAYERS_TAG, TEAMS_TAG, VERSION
 
 DESCRIPTION = """
@@ -26,25 +28,17 @@ app = FastAPI(
     ],
 )
 
-origins = [
-    "https://soccervision.github.io",  # Frontend on GitHub Pages
-    "https://dev-spirit.com",
-    "https://www.dev-spirit.com",
-    "http://localhost:3000",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# No CORS middleware: this API is server-to-server only (no browser caller exists - confirmed
+# the old GitHub Pages frontend origin 404s and nothing in soccer-vision calls this client-side),
+# so a browser's same-origin policy already blocks it. The real access boundary is require_api_key
+# below, not CORS - don't "fix" this by adding permissive CORS headers.
 
 
-@app.exception_handler(ValueError)
-async def value_error_handler(request: Request, exc: ValueError):
-    # Invalid option combinations (e.g. role not valid for the position) are client errors
+@app.exception_handler(GeneratorError)
+async def generator_error_handler(request: Request, exc: GeneratorError):
+    # Invalid option combinations (e.g. role not valid for the position) are client errors,
+    # always written to be safe to echo back. A plain ValueError (a bug, not a deliberate
+    # rejection) is not caught here and 500s instead.
     return JSONResponse(status_code=422, content={"detail": str(exc)})
 
 
@@ -53,7 +47,11 @@ def root():
     return RedirectResponse(url="/docs")
 
 
-app.include_router(v2_router, prefix="/api")
+app.include_router(
+    v2_router,
+    prefix="/api",
+    dependencies=[Depends(require_api_key), Depends(rate_limit)],
+)
 
 if __name__ == "__main__":
     import uvicorn

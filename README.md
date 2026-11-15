@@ -1,19 +1,38 @@
-# Soccer Vision API
+# squad-forge
+
+(Renaming in progress from `soccer-vision-players-stats` - GitHub auto-redirects the old URL.)
 
 FastAPI service that generates soccer squads and players with position-specific, age-aware stats.
+Called by [soccer-vision-gateway](https://github.com/SoccerVision/soccer-vision-gateway), not
+directly by soccer-vision, once the gateway is live - see that repo for the overall architecture.
 
 - **Live:** https://soccer-api.dev-spirit.com (Swagger UI at [`/docs`](https://soccer-api.dev-spirit.com/docs))
-- **Frontend:** https://soccervision.github.io
+
+Every route under `/api/v2` requires a valid `x-api-key` header (see `app/api/auth.py`) - this is
+a server-to-server API, never meant to be called by a browser or the open internet. There's no
+CORS middleware for the same reason (a browser's same-origin policy already blocks it; the old
+`https://soccervision.github.io` CORS entry was a stale leftover from a retired frontend and has
+been removed).
 
 ## Run locally
 
 Requires [uv](https://docs.astral.sh/uv/) and Python 3.12.
 
 ```bash
+export SQUAD_API_SHARED_SECRET=dev-secret-anything-at-least-this-long
 uv sync                                   # creates .venv with app + dev dependencies
 uv run uvicorn app.main:app --reload      # http://127.0.0.1:8000/docs
-uv run pytest                             # 105 tests
+uv run pytest                             # 107 tests
+uv run pip-audit                          # dependency vulnerability check
 ```
+
+### Env vars
+
+- `SQUAD_API_SHARED_SECRET` (required): the key callers must send as `x-api-key`.
+- `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` (optional): enables rate limiting
+  (`app/api/rate_limit.py`, via [`upstash-ratelimit`](https://github.com/upstash/ratelimit-py) -
+  persistent and shared across serverless cold starts, unlike an in-memory counter). Unset, rate
+  limiting is skipped (fail-open) - the shared secret above is the primary defense.
 
 ## API
 
